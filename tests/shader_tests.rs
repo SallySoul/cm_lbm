@@ -1,3 +1,5 @@
+use tokio::sync::Notify;
+
 pub struct Driver {
     pub adapter: wgpu::Adapter,
     pub device: wgpu::Device,
@@ -29,7 +31,9 @@ async fn setup_wgpu() -> Driver {
 async fn add_1() {
     let driver = setup_wgpu().await;
 
-    let data_buffer_n = 256;
+    let work_group_size = 128;
+    let n_work_groups = 2;
+    let data_buffer_n = work_group_size * n_work_groups;
     let data_buffer_size_bytes = data_buffer_n * std::mem::size_of::<u32>();
 
     // Data Buffer
@@ -82,14 +86,14 @@ async fn add_1() {
         });
 
     // Compute
-    let set_one_shader_label = "set_1_shader";
-    let set_one_shader: wgpu::ShaderModule =
+    let set_index_shader_label = "set_1_shader";
+    let set_index_shader: wgpu::ShaderModule =
         driver
             .device
             .create_shader_module(wgpu::ShaderModuleDescriptor {
-                label: Some(&set_one_shader_label),
+                label: Some(&set_index_shader_label),
                 source: wgpu::ShaderSource::Wgsl(std::borrow::Cow::Borrowed(include_str!(
-                    "shaders/set_one.wgsl"
+                    "shaders/set_index.wgsl"
                 ))),
             });
 
@@ -105,25 +109,25 @@ async fn add_1() {
             });
 
     // Create Pipeline layout
-    let set_one_pipeline_layout_label = "set_1_pipeline_layout";
-    let set_one_pipeline_layout =
+    let set_index_pipeline_layout_label = "set_1_pipeline_layout";
+    let set_index_pipeline_layout =
         driver
             .device
             .create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
-                label: Some(&set_one_pipeline_layout_label),
+                label: Some(&set_index_pipeline_layout_label),
                 bind_group_layouts: &[&data_bind_group_layout],
                 push_constant_ranges: &[],
             });
 
     // pipeline
-    let set_one_pipeline_label = "set_1_pipeline";
-    let set_one_pipeline: wgpu::ComputePipeline =
+    let set_index_pipeline_label = "set_1_pipeline";
+    let set_index_pipeline: wgpu::ComputePipeline =
         driver
             .device
             .create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
-                label: Some(&set_one_pipeline_label),
-                layout: Some(&set_one_pipeline_layout),
-                module: &set_one_shader,
+                label: Some(&set_index_pipeline_label),
+                layout: Some(&set_index_pipeline_layout),
+                module: &set_index_shader,
                 entry_point: "main",
                 compilation_options: wgpu::PipelineCompilationOptions::default(),
                 cache: None,
@@ -135,7 +139,7 @@ async fn add_1() {
             .device
             .create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
                 label: Some(&add_one_pipeline_label),
-                layout: Some(&set_one_pipeline_layout),
+                layout: Some(&set_index_pipeline_layout),
                 module: &add_one_shader,
                 entry_point: "main",
                 compilation_options: wgpu::PipelineCompilationOptions::default(),
@@ -151,14 +155,14 @@ async fn add_1() {
             label: Some(&encoder_label),
         });
     {
-        let set_one_pass_label = "set_one_compute_pass";
-        let mut set_one_pass = encoder.begin_compute_pass(&wgpu::ComputePassDescriptor {
-            label: Some(&set_one_pass_label),
+        let set_index_pass_label = "set_index_compute_pass";
+        let mut set_index_pass = encoder.begin_compute_pass(&wgpu::ComputePassDescriptor {
+            label: Some(&set_index_pass_label),
             timestamp_writes: None,
         });
-        set_one_pass.set_pipeline(&set_one_pipeline);
-        set_one_pass.set_bind_group(0, &data_bind_group, &[]);
-        set_one_pass.dispatch_workgroups(2, 1, 1);
+        set_index_pass.set_pipeline(&set_index_pipeline);
+        set_index_pass.set_bind_group(0, &data_bind_group, &[]);
+        set_index_pass.dispatch_workgroups(n_work_groups as u32, 1, 1);
     }
 
     // Ensure we'll copy data into mappable buffer,
@@ -175,6 +179,7 @@ async fn add_1() {
     driver
         .device
         .poll(wgpu::Maintain::WaitForSubmissionIndex(submission));
+
     let capturable = data_map_buffer.clone();
     data_map_buffer
         .slice(..)
@@ -185,12 +190,15 @@ async fn add_1() {
                 for i in 0u32..data_buffer_n as u32 {
                     assert_eq!(i, data_view[i as usize]);
                 }
-                println!("TEST!");
                 drop(view);
                 capturable.unmap();
             }
         });
-    /*
+
+    driver
+        .device
+        .poll(wgpu::Maintain::Wait);
+
     // Run add pipeline
     let add_encoder_label = "add_one_encoder";
     let mut add_encoder = driver
@@ -206,7 +214,7 @@ async fn add_1() {
         });
         add_one_pass.set_pipeline(&add_one_pipeline);
         add_one_pass.set_bind_group(0, &data_bind_group, &[]);
-        add_one_pass.dispatch_workgroups(1, 1, 1);
+        add_one_pass.dispatch_workgroups(n_work_groups as u32, 1, 1);
     }
     add_encoder.copy_buffer_to_buffer(
         &data_buffer,
@@ -227,10 +235,13 @@ async fn add_1() {
             if result.is_ok() {
                 let view = capturable.slice(..).get_mapped_range();
                 let data_view: &[u32] = bytemuck::cast_slice(&view);
-                println!("{:?}", data_view);
+                for i in 0u32..data_buffer_n as u32 {
+                    assert_eq!(i + 1, data_view[i as usize]);
+                }
                 drop(view);
                 capturable.unmap();
             }
         });
-        */
+
+    driver.device.poll(wgpu::Maintain::Wait);
 }
