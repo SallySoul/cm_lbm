@@ -9,7 +9,9 @@ pub fn create_storage_buffer(
     device.create_buffer(&wgpu::BufferDescriptor {
         label: label,
         size: buffer_byte_size,
-        usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_SRC,
+        usage: wgpu::BufferUsages::STORAGE
+            | wgpu::BufferUsages::COPY_SRC
+            | wgpu::BufferUsages::COPY_DST,
         mapped_at_creation: false,
     })
 }
