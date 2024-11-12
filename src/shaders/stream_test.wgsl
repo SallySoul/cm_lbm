@@ -16,7 +16,7 @@ var<storage, read_write> output: array<f32>;
 fn linear_index(x_raw: i32, y_raw: i32) -> i32 {
   let x = x_raw % dimensions.rows;
   let y = x_raw % dimensions.cols;
-  let linear_index = (x * dimensions.rows + y) * 9;
+  let linear_index = (x * dimensions.rows + y);
 }
 
 @compute

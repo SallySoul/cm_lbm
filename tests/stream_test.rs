@@ -16,7 +16,21 @@ async fn stream_test() {
         },
     );
 
+    let write_map = cm_lbm::kernel::WriteMapBuffer::new(&driver.device, &lattice_dimensions.dimensions);
+    let read_map = cm_lbm::kernel::ReadMapBuffer::new(&driver.device, &lattice_dimensions.dimensions);
+
+
+
     let densities = cm_lbm::kernel::Densities::new(&driver.device, &lattice_dimensions.dimensions);
+
+        // Write and Read
+        write_map.write_data(&driver, &densities.input_buffer, |slice| {
+            assert_eq!(slice.len(), 100);
+            for (i, x) in slice.iter_mut().enumerate() {
+                *x = i as f32;
+            }
+            println!("slice before: {:?}", slice);
+        });
 
     let stream_pipeline =
         cm_lbm::kernel::Stream::new(&driver.device, &densities.layout, &lattice_dimensions);
@@ -36,29 +50,13 @@ async fn stream_test() {
         &densities.output_bind_group,
     );
 
-    let buffer_byte_size: u64 =
-        lattice_dimensions.dimensions.total as u64 * std::mem::size_of::<f32>() as u64;
+    driver.device.poll(wgpu::Maintain::Wait);
 
-    let map_buffer_label = "map_buffer";
-    let map_buffer = std::sync::Arc::new(driver.device.create_buffer(&wgpu::BufferDescriptor {
-        label: Some(map_buffer_label),
-        size: buffer_byte_size,
-        usage: wgpu::BufferUsages::MAP_READ | wgpu::BufferUsages::COPY_DST,
-        mapped_at_creation: false,
-    }));
-
-    encoder.copy_buffer_to_buffer(
-        &densities.output_buffer,
-        0,
-        &map_buffer,
-        0,
-        buffer_byte_size,
-    );
-
-    let submission = driver.queue.submit(Some(encoder.finish()));
-    driver
-        .device
-        .poll(wgpu::Maintain::WaitForSubmissionIndex(submission));
-
-    // create mappable buffer, and collect
+    read_map.read_data(&driver, &densities.output_buffer, |slice| {
+            println!("slice result: {:?}", slice);
+            assert_eq!(slice.len(), 100);
+            for (i, x) in slice.iter().enumerate() {
+                assert_eq!(*x, i as f32 * 9.0);
+            }
+    });
 }
