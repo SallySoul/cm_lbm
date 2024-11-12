@@ -34,7 +34,31 @@ async fn stream_test() {
         &mut encoder,
         &densities.input_bind_group,
         &densities.output_bind_group,
-    )
+    );
+
+    let buffer_byte_size: u64 =
+        lattice_dimensions.dimensions.total as u64 * std::mem::size_of::<f32>() as u64;
+
+    let map_buffer_label = "map_buffer";
+    let map_buffer = std::sync::Arc::new(driver.device.create_buffer(&wgpu::BufferDescriptor {
+        label: Some(map_buffer_label),
+        size: buffer_byte_size,
+        usage: wgpu::BufferUsages::MAP_READ | wgpu::BufferUsages::COPY_DST,
+        mapped_at_creation: false,
+    }));
+
+    encoder.copy_buffer_to_buffer(
+        &densities.output_buffer,
+        0,
+        &map_buffer,
+        0,
+        buffer_byte_size,
+    );
+
+    let submission = driver.queue.submit(Some(encoder.finish()));
+    driver
+        .device
+        .poll(wgpu::Maintain::WaitForSubmissionIndex(submission));
 
     // create mappable buffer, and collect
 }

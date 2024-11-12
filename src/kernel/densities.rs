@@ -11,7 +11,7 @@ pub struct Densities<'a> {
 
 impl<'a> Densities<'a> {
     pub fn new(device: &wgpu::Device, dimensions: &'a crate::LatticeDimensions) -> Self {
-        let buffer_byte_size: u64 = dimensions.total as u64 * std::mem::size_of::<f32>() as u64;
+        let buffer_byte_size: u64 = dimensions.float_buffer_byte_size();
 
         let input_buffer =
             create_storage_buffer(device, buffer_byte_size, Some("densities_buffer_a"));

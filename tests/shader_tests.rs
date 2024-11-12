@@ -1,41 +1,4 @@
-// Compute Shader Reference
-//
-// This simple integration tests demonstrates a simple hello world level example
-// We will allocate a buffer of u32,
-// then have the GPU set each buffer element to its index,
-// and then we'll add one.
-
-// While using compute shaders in wgpu,
-// there are generally two things we'll need
-//   * A device instance,
-//     - Handle to compute device
-//     - Create GPU resources and pipelines
-//   * A queue
-//     - Handles the device's command queue
-//     - Use to submit pipeline passes
-//     - Also has other commands, like copy buffer
-pub struct Driver {
-    pub device: wgpu::Device,
-    pub queue: wgpu::Queue,
-}
-
-async fn setup_wgpu() -> Driver {
-    let instance = wgpu::Instance::default();
-
-    // Adapter is how we communicate with the device
-    let adapter = instance
-        .request_adapter(&wgpu::RequestAdapterOptions::default())
-        .await
-        .expect("Failed to find an appropriate adapter");
-
-    // Create the logical device and command queue
-    let (device, queue) = adapter
-        .request_device(&wgpu::DeviceDescriptor::default(), None)
-        .await
-        .expect("Failed to create device");
-
-    return Driver { device, queue };
-}
+use cm_lbm::wgpu_util::*;
 
 /// wgpu relies on asynchonous functions
 /// in Rust, that means we need an executor

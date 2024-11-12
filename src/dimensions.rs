@@ -8,3 +8,9 @@ pub struct LatticeDimensions {
     pub total: i32,
     pub q: i32,
 }
+
+impl LatticeDimensions {
+    pub fn float_buffer_byte_size(&self) -> u64 {
+        self.total as u64 * std::mem::size_of::<f32>() as u64
+    }
+}
