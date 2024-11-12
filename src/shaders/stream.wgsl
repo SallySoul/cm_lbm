@@ -20,7 +20,7 @@ fn linear_index(x_raw: i32, y_raw: i32) -> i32 {
 }
 
 @compute
-@workgroup_size(128)
+@workgroup_size(10)
 fn main(@builtin(global_invocation_id) global_invocation_id: vec3<u32>) {
   let x = global_invocation_id.x;
   if x > dimensions.rows {

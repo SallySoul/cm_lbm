@@ -16,21 +16,21 @@ async fn stream_test() {
         },
     );
 
-    let write_map = cm_lbm::kernel::WriteMapBuffer::new(&driver.device, &lattice_dimensions.dimensions);
-    let read_map = cm_lbm::kernel::ReadMapBuffer::new(&driver.device, &lattice_dimensions.dimensions);
-
-
+    let write_map =
+        cm_lbm::kernel::WriteMapBuffer::new(&driver.device, &lattice_dimensions.dimensions);
+    let read_map =
+        cm_lbm::kernel::ReadMapBuffer::new(&driver.device, &lattice_dimensions.dimensions);
 
     let densities = cm_lbm::kernel::Densities::new(&driver.device, &lattice_dimensions.dimensions);
 
-        // Write and Read
-        write_map.write_data(&driver, &densities.input_buffer, |slice| {
-            assert_eq!(slice.len(), 100);
-            for (i, x) in slice.iter_mut().enumerate() {
-                *x = i as f32;
-            }
-            println!("slice before: {:?}", slice);
-        });
+    // Write and Read
+    write_map.write_data(&driver, &densities.input_buffer, |slice| {
+        assert_eq!(slice.len(), 100);
+        for (i, x) in slice.iter_mut().enumerate() {
+            *x = i as f32;
+        }
+        println!("slice before: {:?}", slice);
+    });
 
     let stream_pipeline =
         cm_lbm::kernel::Stream::new(&driver.device, &densities.layout, &lattice_dimensions);
@@ -44,19 +44,27 @@ async fn stream_test() {
         });
 
     stream_pipeline.stream(
-        [10, 1, 1],
+        [1, 1, 1],
         &mut encoder,
         &densities.input_bind_group,
         &densities.output_bind_group,
     );
+    let submission = driver.queue.submit(Some(encoder.finish()));
+
+    driver
+        .device
+        .poll(wgpu::Maintain::WaitForSubmissionIndex(submission));
 
     driver.device.poll(wgpu::Maintain::Wait);
-
+    read_map.read_data(&driver, &densities.input_buffer, |slice| {
+        println!("slice input: {:?}", slice);
+        assert_eq!(slice.len(), 100);
+    });
     read_map.read_data(&driver, &densities.output_buffer, |slice| {
-            println!("slice result: {:?}", slice);
-            assert_eq!(slice.len(), 100);
-            for (i, x) in slice.iter().enumerate() {
-                assert_eq!(*x, i as f32 * 9.0);
-            }
+        println!("slice result: {:?}", slice);
+        assert_eq!(slice.len(), 100);
+        for (i, x) in slice.iter().enumerate() {
+            assert_eq!(*x, i as f32 * 9.0);
+        }
     });
 }

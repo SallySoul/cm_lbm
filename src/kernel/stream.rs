@@ -63,7 +63,7 @@ impl<'a> Stream<'a> {
         output_buffer: &wgpu::BindGroup,
     ) {
         let mut cpass = encoder.begin_compute_pass(&wgpu::ComputePassDescriptor {
-            label: Some("Stream_nw_se"),
+            label: Some("stream"),
             timestamp_writes: None,
         });
         cpass.set_pipeline(&self.pipeline);

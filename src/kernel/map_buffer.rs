@@ -162,5 +162,32 @@ mod unit_tests {
                 assert_eq!(*x, i as f32);
             }
         });
+
+        let mut encoder = driver
+            .device
+            .create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                label: Some("test_copy"),
+            });
+
+        encoder.copy_buffer_to_buffer(
+            &densities.input_buffer,
+            0,
+            &densities.output_buffer,
+            0,
+            lattice_dimensions.float_buffer_byte_size(),
+        );
+
+        let submission = driver.queue.submit(Some(encoder.finish()));
+
+        driver
+            .device
+            .poll(wgpu::Maintain::WaitForSubmissionIndex(submission));
+
+        read_map.read_data(&driver, &densities.output_buffer, |slice| {
+            assert_eq!(slice.len(), 100);
+            for (i, x) in slice.iter().enumerate() {
+                assert_eq!(*x, i as f32);
+            }
+        });
     }
 }
