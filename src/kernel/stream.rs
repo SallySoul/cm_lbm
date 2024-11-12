@@ -73,16 +73,3 @@ impl<'a> Stream<'a> {
         cpass.dispatch_workgroups(work_groups[0], work_groups[1], work_groups[2]);
     }
 }
-
-#[cfg(test)]
-mod unit_tests {
-    use super::*;
-    use crate::wgpu_util::*;
-
-    #[tokio::test]
-    async fn test_stream() {
-        let device = setup_wgpu().await;
-
-        // Create
-    }
-}
