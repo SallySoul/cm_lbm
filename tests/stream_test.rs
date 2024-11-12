@@ -44,7 +44,7 @@ async fn stream_test() {
         });
 
     stream_pipeline.stream(
-        [13, 13, 1],
+        [10, 1, 1],
         &mut encoder,
         &densities.input_bind_group,
         &densities.output_bind_group,
