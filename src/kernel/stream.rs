@@ -5,28 +5,20 @@
 // * layout descriptors for all of those
 
 use crate::kernel::dimensions::LatticeDimensionsUniform;
+use crate::kernel::gen::*;
+use crate::lattice::D2Q9;
 
-pub struct Stream<'a> {
+pub struct Stream2D<'a> {
     lattice_dimensions: &'a LatticeDimensionsUniform,
-    pipeline: wgpu::ComputePipeline,
+    pipelines: Vec<wgpu::ComputePipeline>,
 }
 
-impl<'a> Stream<'a> {
+impl<'a> Stream2D<'a> {
     pub fn new(
         device: &wgpu::Device,
         density_bg_layout: &wgpu::BindGroupLayout,
         lattice_dimensions: &'a LatticeDimensionsUniform,
     ) -> Self {
-        // Compute
-        let shader_label = "stream_shader";
-        let shader_module: wgpu::ShaderModule =
-            device.create_shader_module(wgpu::ShaderModuleDescriptor {
-                label: Some(shader_label),
-                source: wgpu::ShaderSource::Wgsl(std::borrow::Cow::Borrowed(include_str!(
-                    "../shaders/stream_test.wgsl"
-                ))),
-            });
-
         let pipeline_layout_label = "stream_pipeline_layout";
         let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
             label: Some(pipeline_layout_label),
@@ -38,20 +30,41 @@ impl<'a> Stream<'a> {
             push_constant_ranges: &[],
         });
 
-        let pipeline_label = "stream_pipeline";
-        let pipeline: wgpu::ComputePipeline =
-            device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
-                label: Some(pipeline_label),
-                layout: Some(&pipeline_layout),
-                module: &shader_module,
-                entry_point: "main",
-                compilation_options: wgpu::PipelineCompilationOptions::default(),
-                cache: None,
-            });
+        let mut pipelines = Vec::with_capacity(lattice_dimensions.dimensions.q as usize);
+        for i in 0..lattice_dimensions.dimensions.q as usize {
+            // Compute
+            let dir = D2Q9[i];
+            let mut b = StreamShader2DBuilder::new();
+            b.add_dimensions_uniform(0);
+            b.add_input_output(1, 2);
+            b.add_index_ops_periodic();
+            b.add_main(dir, [8, 8, 1]);
+            let shader_source = b.finish();
 
-        Stream {
+            let shader_label = format!("stream_shader_{:?}", dir);
+            let shader_module: wgpu::ShaderModule =
+                device.create_shader_module(wgpu::ShaderModuleDescriptor {
+                    label: Some(&shader_label),
+                    source: wgpu::ShaderSource::Wgsl(std::borrow::Cow::Borrowed(&shader_source)),
+                });
+
+            let pipeline_label = format!("stream_pipeline_{:?}", dir);
+            let pipeline: wgpu::ComputePipeline =
+                device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
+                    label: Some(&pipeline_label),
+                    layout: Some(&pipeline_layout),
+                    module: &shader_module,
+                    entry_point: "main",
+                    compilation_options: wgpu::PipelineCompilationOptions::default(),
+                    cache: None,
+                });
+
+            pipelines.push(pipeline);
+        }
+
+        Stream2D {
             lattice_dimensions,
-            pipeline,
+            pipelines,
         }
     }
 
@@ -59,17 +72,19 @@ impl<'a> Stream<'a> {
         &self,
         work_groups: [u32; 3],
         encoder: &mut wgpu::CommandEncoder,
-        input_buffer: &wgpu::BindGroup,
-        output_buffer: &wgpu::BindGroup,
+        input_buffers: &[wgpu::BindGroup],
+        output_buffers: &[wgpu::BindGroup],
     ) {
         let mut cpass = encoder.begin_compute_pass(&wgpu::ComputePassDescriptor {
             label: Some("stream"),
             timestamp_writes: None,
         });
-        cpass.set_pipeline(&self.pipeline);
-        cpass.set_bind_group(0, &self.lattice_dimensions.bind_group, &[]);
-        cpass.set_bind_group(1, input_buffer, &[]);
-        cpass.set_bind_group(2, output_buffer, &[]);
-        cpass.dispatch_workgroups(work_groups[0], work_groups[1], work_groups[2]);
+        for i in 0..self.lattice_dimensions.dimensions.q as usize {
+            cpass.set_pipeline(&self.pipelines[i]);
+            cpass.set_bind_group(0, &self.lattice_dimensions.bind_group, &[]);
+            cpass.set_bind_group(1, &input_buffers[i], &[]);
+            cpass.set_bind_group(2, &output_buffers[i], &[]);
+            cpass.dispatch_workgroups(work_groups[0], work_groups[1], work_groups[2]);
+        }
     }
 }
