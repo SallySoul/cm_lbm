@@ -1,12 +1,14 @@
 // Stream Shader needs
-// * input buffer
-// * output buffer
+// * input buffers
+// * output buffers
 // * LatticeDimensions
 // * layout descriptors for all of those
 
 use crate::kernel::dimensions::LatticeDimensionsUniform;
 use crate::kernel::gen::*;
 use crate::lattice::D2Q9;
+
+use super::Densities;
 
 pub struct Stream2D<'a> {
     lattice_dimensions: &'a LatticeDimensionsUniform,
@@ -72,8 +74,7 @@ impl<'a> Stream2D<'a> {
         &self,
         work_groups: [u32; 3],
         encoder: &mut wgpu::CommandEncoder,
-        input_buffers: &[wgpu::BindGroup],
-        output_buffers: &[wgpu::BindGroup],
+        densities: &mut Densities,
     ) {
         let mut cpass = encoder.begin_compute_pass(&wgpu::ComputePassDescriptor {
             label: Some("stream"),
@@ -82,9 +83,22 @@ impl<'a> Stream2D<'a> {
         for i in 0..self.lattice_dimensions.dimensions.q as usize {
             cpass.set_pipeline(&self.pipelines[i]);
             cpass.set_bind_group(0, &self.lattice_dimensions.bind_group, &[]);
-            cpass.set_bind_group(1, &input_buffers[i], &[]);
-            cpass.set_bind_group(2, &output_buffers[i], &[]);
+            cpass.set_bind_group(1, &densities.input_bindgroups[i], &[]);
+            cpass.set_bind_group(2, &densities.output_bindgroups[i], &[]);
             cpass.dispatch_workgroups(work_groups[0], work_groups[1], work_groups[2]);
         }
+        std::mem::swap(&mut densities.input_bindgroups, &mut densities.output_bindgroups);
+        std::mem::swap(&mut densities.input_buffers, &mut densities.output_buffers);
+    }
+}
+
+#[cfg(test)]
+mod unit_tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_stream_2d() {
+        // Make Dimensions
+        let driver = crate::setup_wgpu().await;
     }
 }

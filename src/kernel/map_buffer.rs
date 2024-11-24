@@ -1,4 +1,5 @@
 use crate::wgpu_util::Driver;
+use std::sync::{Arc, Mutex};
 
 pub struct ReadMapBuffer {
     map_buffer: std::sync::Arc<wgpu::Buffer>,
@@ -21,6 +22,16 @@ impl ReadMapBuffer {
             map_buffer,
             size_bytes,
         }
+    }
+
+    pub fn clone_data(&self, driver: &Driver, buffer: &wgpu::Buffer) -> Vec<f32> {
+        let data_buffer = Arc::new(Mutex::new(Vec::new()));
+        let capturable = data_buffer.clone();
+        self.read_data(driver, buffer, move |slice| {
+            *capturable.lock().unwrap() = slice.to_vec();
+        });
+        let result: Vec<f32> = data_buffer.lock().unwrap().clone();
+        result
     }
 
     pub fn read_data<F: FnOnce(&[f32]) + Sync + Send + 'static>(
@@ -149,14 +160,14 @@ mod unit_tests {
         let read_map = ReadMapBuffer::new(&driver.device, &lattice_dimensions);
 
         // Write and Read
-        write_map.write_data(&driver, &densities.input_buffer, |slice| {
+        write_map.write_data(&driver, &densities.input_buffers[0], |slice| {
             assert_eq!(slice.len(), 100);
             for (i, x) in slice.iter_mut().enumerate() {
                 *x = i as f32;
             }
         });
 
-        read_map.read_data(&driver, &densities.input_buffer, |slice| {
+        read_map.read_data(&driver, &densities.input_buffers[0], |slice| {
             assert_eq!(slice.len(), 100);
             for (i, x) in slice.iter().enumerate() {
                 assert_eq!(*x, i as f32);
@@ -170,9 +181,9 @@ mod unit_tests {
             });
 
         encoder.copy_buffer_to_buffer(
-            &densities.input_buffer,
+            &densities.input_buffers[0],
             0,
-            &densities.output_buffer,
+            &densities.output_buffers[0],
             0,
             lattice_dimensions.float_buffer_byte_size(),
         );
@@ -183,7 +194,7 @@ mod unit_tests {
             .device
             .poll(wgpu::Maintain::WaitForSubmissionIndex(submission));
 
-        read_map.read_data(&driver, &densities.output_buffer, |slice| {
+        read_map.read_data(&driver, &densities.output_buffers[0], |slice| {
             assert_eq!(slice.len(), 100);
             for (i, x) in slice.iter().enumerate() {
                 assert_eq!(*x, i as f32);

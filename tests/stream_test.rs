@@ -16,11 +16,6 @@ async fn stream_test() {
         },
     );
 
-    let write_map =
-        cm_lbm::kernel::WriteMapBuffer::new(&driver.device, &lattice_dimensions.dimensions);
-    let read_map =
-        cm_lbm::kernel::ReadMapBuffer::new(&driver.device, &lattice_dimensions.dimensions);
-
     let densities = cm_lbm::kernel::Densities::new(&driver.device, &lattice_dimensions.dimensions);
 
     // Write and Read

@@ -16,6 +16,7 @@ impl StreamShader2DBuilder {
     cols: i32,
     total: i32,
     q: i32,
+    size: f32,
 }}
 @group({}) @binding(0) 
 var<uniform> dimensions: LatticeDimensions;",

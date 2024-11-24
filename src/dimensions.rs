@@ -7,6 +7,7 @@ pub struct LatticeDimensions {
     pub cols: i32,
     pub total: i32,
     pub q: i32,
+    pub size: f32,
 }
 
 impl LatticeDimensions {
