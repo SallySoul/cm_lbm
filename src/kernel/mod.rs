@@ -1,6 +1,7 @@
 pub mod densities;
 pub mod dimensions;
-pub mod macro_gen;
+pub mod pressure_gen;
+pub mod u_gen;
 pub mod macros;
 pub mod map_buffer;
 pub mod setup_bind_group;

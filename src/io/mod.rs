@@ -72,8 +72,8 @@ impl VTKBuilder2D {
         }
     }
 
-    pub fn add_pressure(&mut self, driver: &wgpu_util::Driver, macros: &kernel::Macros) {
-        let pressure_data = macros.get_pressure_data(driver);
+    pub fn add_macros(&mut self, driver: &wgpu_util::Driver, macros: &kernel::Macros) {
+        let macros_data = macros.get_data(driver);
         self.point_attributes
             .push(Attribute::DataArray(DataArrayBase {
                 name: "pressure".to_string(),
@@ -81,7 +81,23 @@ impl VTKBuilder2D {
                     num_comp: 1,
                     lookup_table: None,
                 },
-                data: IOBuffer::F32(pressure_data),
+                data: IOBuffer::F32(macros_data.pressure),
+            }));
+
+        let mut u_data = Vec::with_capacity(macros_data.ux.len() * 2);
+        for (x, y) in macros_data.ux.iter().zip(macros_data.uy.iter()) {
+            u_data.push(*x);
+            u_data.push(*y);
+        }
+
+        self.point_attributes
+            .push(Attribute::DataArray(DataArrayBase {
+                name: "velocity".to_string(),
+                elem: ElementType::Scalars {
+                    num_comp: 2,
+                    lookup_table: None,
+                },
+                data: IOBuffer::F32(u_data),
             }));
     }
 

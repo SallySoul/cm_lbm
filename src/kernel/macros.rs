@@ -1,9 +1,17 @@
 use crate::kernel::densities::Densities;
-use crate::kernel::macro_gen::*;
+use crate::kernel::pressure_gen::*;
+use crate::kernel::u_gen::*;
 use crate::kernel::map_buffer::*;
 use crate::kernel::setup_bind_group::*;
 use crate::kernel::LatticeDimensionsUniform;
 use crate::wgpu_util;
+use crate::lattice::D2Q9;
+
+pub struct MacrosData {
+    pub pressure: Vec<f32>,
+    pub ux: Vec<f32>,
+    pub uy: Vec<f32>,
+}
 
 pub struct Macros<'a> {
     lattice_dimensions: &'a LatticeDimensionsUniform,
@@ -22,8 +30,7 @@ pub struct Macros<'a> {
     // while the rest do an add assign
     pressure_first_pipeline: wgpu::ComputePipeline,
     pressure_rest_pipeline: wgpu::ComputePipeline,
-    //u_pipeline_first: wgpu::ComputePipeline,
-    //u_pipeline_rest: wgpu::ComputePipeline,
+    u_pipelines: Vec<wgpu::ComputePipeline>,
 }
 
 impl<'a> Macros<'a> {
@@ -127,6 +134,7 @@ impl<'a> Macros<'a> {
             bind_group_layouts: &[
                 &lattice_dimensions.layout,
                 &densities.bindgroup_layout,
+                &pressure_bindgroup_layout,
                 &u_bindgroup_layout,
             ],
             push_constant_ranges: &[],
@@ -182,6 +190,40 @@ impl<'a> Macros<'a> {
                 cache: None,
             });
 
+        let q = lattice_dimensions.dimensions.q as usize;
+        let mut u_pipelines = Vec::with_capacity(q);
+        let mut first = true;
+        for i in 0..q {
+            let dir = D2Q9[i];
+            let mut u_builder = UShader2DBuilder::new();
+            u_builder.add_dimensions_uniform(0);
+            u_builder.add_input_output(1, 2, 3);
+            u_builder.add_index_ops_periodic();
+            u_builder.add_main([8, 8, 1], dir, first);
+            let shader_source = u_builder.finish();
+            let shader_label = format!("u_shader_{}", i);
+            let shader_module: wgpu::ShaderModule =
+                device.create_shader_module(wgpu::ShaderModuleDescriptor {
+                    label: Some(&shader_label),
+                    source: wgpu::ShaderSource::Wgsl(std::borrow::Cow::Borrowed(&shader_source)),
+                });
+
+            let pipeline_label = format!("u_pipeline_{}", i);
+            let pipeline: wgpu::ComputePipeline =
+                device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
+                    label: Some(&pipeline_label),
+                    layout: Some(&u_pipeline_layout),
+                    module: &shader_module,
+                    entry_point: "main",
+                    compilation_options: wgpu::PipelineCompilationOptions::default(),
+                    cache: None,
+                });
+
+            u_pipelines.push(pipeline);
+ 
+            first = false;
+        }
+
         Macros {
             lattice_dimensions,
             pressure_bindgroup_layout,
@@ -193,6 +235,7 @@ impl<'a> Macros<'a> {
             u_bindgroup,
             pressure_first_pipeline,
             pressure_rest_pipeline,
+            u_pipelines,
         }
     }
 
@@ -202,6 +245,7 @@ impl<'a> Macros<'a> {
         encoder: &mut wgpu::CommandEncoder,
         densities: &Densities,
     ) {
+        let q = self.lattice_dimensions.dimensions.q as usize;
         let mut cpass = encoder.begin_compute_pass(&wgpu::ComputePassDescriptor {
             label: Some("stream"),
             timestamp_writes: None,
@@ -212,16 +256,32 @@ impl<'a> Macros<'a> {
         cpass.set_bind_group(2, &self.pressure_bindgroup, &[]);
         cpass.dispatch_workgroups(work_groups[0], work_groups[1], work_groups[2]);
         cpass.set_pipeline(&self.pressure_rest_pipeline);
-        for i in 1..self.lattice_dimensions.dimensions.q as usize {
+        for i in 1..q {
             cpass.set_bind_group(0, &self.lattice_dimensions.bind_group, &[]);
             cpass.set_bind_group(1, &densities.input_bindgroups[i], &[]);
             cpass.set_bind_group(2, &self.pressure_bindgroup, &[]);
             cpass.dispatch_workgroups(work_groups[0], work_groups[1], work_groups[2]);
         }
+        
+        for i in 0..q {
+            cpass.set_pipeline(&self.u_pipelines[i]);
+            cpass.set_bind_group(0, &self.lattice_dimensions.bind_group, &[]);
+            cpass.set_bind_group(1, &densities.input_bindgroups[i], &[]);
+            cpass.set_bind_group(2, &self.pressure_bindgroup, &[]);
+            cpass.set_bind_group(3, &self.u_bindgroup, &[]);
+            cpass.dispatch_workgroups(work_groups[0], work_groups[1], work_groups[2]);
+        }
     }
 
-    pub fn get_pressure_data(&self, driver: &wgpu_util::Driver) -> Vec<f32> {
+    pub fn get_data(&self, driver: &wgpu_util::Driver) -> MacrosData {
         let read_buffer = ReadMapBuffer::new(&driver.device, &self.lattice_dimensions.dimensions);
-        read_buffer.clone_data(driver, &self.pressure_buffer)
+        let pressure = read_buffer.clone_data(driver, &self.pressure_buffer);
+        let ux = read_buffer.clone_data(driver, &self.ux_buffer);
+        let uy = read_buffer.clone_data(driver, &self.uy_buffer);
+        MacrosData {
+            pressure,
+            ux, 
+            uy,
+        }
     }
 }

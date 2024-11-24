@@ -44,7 +44,7 @@ async fn main() {
         .poll(wgpu::Maintain::WaitForSubmissionIndex(submission));
     let mut b = VTKBuilder2D::new(&d);
     b.add_densities(&driver, &densities);
-    b.add_pressure(&driver, &macros);
+    b.add_macros(&driver, &macros);
     b.export("vtu_test/frame_0.vtu");
 
     let s = Stream2D::new(&driver.device, &densities.bindgroup_layout, &u);
@@ -65,7 +65,7 @@ async fn main() {
 
         let mut b = VTKBuilder2D::new(&d);
         b.add_densities(&driver, &densities);
-        b.add_pressure(&driver, &macros);
+        b.add_macros(&driver, &macros);
         b.export(&format!("vtu_test/frame_{:03}.vtu", i));
     }
 }
