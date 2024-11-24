@@ -145,11 +145,13 @@ mod unit_tests {
         let rows = 10;
         let cols = 10;
         let q = 9;
+        let size = 1.0;
         let lattice_dimensions = crate::LatticeDimensions {
             rows,
             cols,
             total: rows * cols,
             q,
+            size,
         };
         assert_eq!(lattice_dimensions.total, 100);
 

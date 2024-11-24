@@ -1,7 +1,7 @@
 use cm_lbm::dimensions::*;
 use cm_lbm::io::*;
-use cm_lbm::wgpu_util;
 use cm_lbm::kernel::*;
+use cm_lbm::wgpu_util;
 
 #[tokio::main]
 async fn main() {
@@ -29,11 +29,25 @@ async fn main() {
     };
     densities.set_data(&driver, input_data);
 
+    let macros = Macros::new(&driver.device, &densities, &u);
+
+    let encoder_label = "read_encoder";
+    let mut encoder = driver
+        .device
+        .create_command_encoder(&wgpu::CommandEncoderDescriptor {
+            label: Some(encoder_label),
+        });
+    macros.compute([2, 2, 1], &mut encoder, &densities);
+    let submission = driver.queue.submit(Some(encoder.finish()));
+    driver
+        .device
+        .poll(wgpu::Maintain::WaitForSubmissionIndex(submission));
     let mut b = VTKBuilder2D::new(&d);
     b.add_densities(&driver, &densities);
+    b.add_pressure(&driver, &macros);
     b.export("vtu_test/frame_0.vtu");
 
-    let s = Stream2D::new(&driver.device, &densities.bindgroup_layout, &u); 
+    let s = Stream2D::new(&driver.device, &densities.bindgroup_layout, &u);
 
     for i in 1..13 {
         let encoder_label = "read_encoder";
@@ -43,6 +57,7 @@ async fn main() {
                 label: Some(encoder_label),
             });
         s.stream([2, 2, 1], &mut encoder, &mut densities);
+        macros.compute([2, 2, 1], &mut encoder, &densities);
         let submission = driver.queue.submit(Some(encoder.finish()));
         driver
             .device
@@ -50,6 +65,7 @@ async fn main() {
 
         let mut b = VTKBuilder2D::new(&d);
         b.add_densities(&driver, &densities);
+        b.add_pressure(&driver, &macros);
         b.export(&format!("vtu_test/frame_{:03}.vtu", i));
     }
 }

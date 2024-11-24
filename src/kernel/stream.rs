@@ -5,7 +5,7 @@
 // * layout descriptors for all of those
 
 use crate::kernel::dimensions::LatticeDimensionsUniform;
-use crate::kernel::gen::*;
+use crate::kernel::stream_gen::*;
 use crate::lattice::D2Q9;
 
 use super::Densities;
@@ -87,7 +87,10 @@ impl<'a> Stream2D<'a> {
             cpass.set_bind_group(2, &densities.output_bindgroups[i], &[]);
             cpass.dispatch_workgroups(work_groups[0], work_groups[1], work_groups[2]);
         }
-        std::mem::swap(&mut densities.input_bindgroups, &mut densities.output_bindgroups);
+        std::mem::swap(
+            &mut densities.input_bindgroups,
+            &mut densities.output_bindgroups,
+        );
         std::mem::swap(&mut densities.input_buffers, &mut densities.output_buffers);
     }
 }

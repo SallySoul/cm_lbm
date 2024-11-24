@@ -72,6 +72,19 @@ impl VTKBuilder2D {
         }
     }
 
+    pub fn add_pressure(&mut self, driver: &wgpu_util::Driver, macros: &kernel::Macros) {
+        let pressure_data = macros.get_pressure_data(driver);
+        self.point_attributes
+            .push(Attribute::DataArray(DataArrayBase {
+                name: "pressure".to_string(),
+                elem: ElementType::Scalars {
+                    num_comp: 1,
+                    lookup_table: None,
+                },
+                data: IOBuffer::F32(pressure_data),
+            }));
+    }
+
     pub fn export(self, path: &str) {
         Vtk {
             version: Version { major: 1, minor: 0 },
