@@ -43,7 +43,7 @@ fn coord_to_linear(x_raw: i32, y_raw: i32) -> i32 {
     x = x_raw % dimensions.rows;
   }
   if x_raw < 0 {
-    x = dimensions.rows - x_raw;
+    x = dimensions.rows + x_raw;
   }
 
   var y = y_raw;
@@ -51,7 +51,7 @@ fn coord_to_linear(x_raw: i32, y_raw: i32) -> i32 {
     y = y_raw % dimensions.rows;
   }
   if y_raw < 0 {
-    y = dimensions.rows - y_raw;
+    y = dimensions.rows + y_raw;
   }
 
   return x * dimensions.rows + y;
@@ -79,8 +79,8 @@ fn main(@builtin(global_invocation_id) global_invocation_id: vec3<u32>) {{
     return;
   }}
 
-  let output_index = coord_to_linear(x, y);
-  let input_index = coord_to_linear(x + {}, y + {});
+  let input_index = coord_to_linear(x, y);
+  let output_index = coord_to_linear(x + {}, y + {});
   output[output_index] = input[input_index];
 }}",
             dir[0], dir[1]
