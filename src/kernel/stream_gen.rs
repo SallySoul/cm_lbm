@@ -39,11 +39,11 @@ var<storage, read_write> output: array<f32>;",
         self.buffer += "
 fn coord_to_linear(x_raw: i32, y_raw: i32) -> i32 {
   var x = x_raw;
-  if x_raw >= dimensions.rows {
-    x = x_raw % dimensions.rows;
+  if x_raw >= dimensions.cols{
+    x = x_raw % dimensions.cols;
   }
   if x_raw < 0 {
-    x = dimensions.rows + x_raw;
+    x = dimensions.cols + x_raw;
   }
 
   var y = y_raw;
@@ -70,12 +70,12 @@ fn coord_to_linear(x_raw: i32, y_raw: i32) -> i32 {
             "
 fn main(@builtin(global_invocation_id) global_invocation_id: vec3<u32>) {{
   let x = i32(global_invocation_id.x);
-  if x >= dimensions.rows {{
+  if x > dimensions.cols {{
     return;
   }}
 
   let y = i32(global_invocation_id.y);
-  if y >= dimensions.cols {{
+  if y > dimensions.rows {{
     return;
   }}
 

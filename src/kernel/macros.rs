@@ -1,11 +1,11 @@
 use crate::kernel::densities::Densities;
-use crate::kernel::pressure_gen::*;
-use crate::kernel::u_gen::*;
 use crate::kernel::map_buffer::*;
+use crate::kernel::pressure_gen::*;
 use crate::kernel::setup_bind_group::*;
+use crate::kernel::u_gen::*;
 use crate::kernel::LatticeDimensionsUniform;
-use crate::wgpu_util;
 use crate::lattice::D2Q9;
+use crate::wgpu_util;
 
 pub struct MacrosData {
     pub pressure: Vec<f32>,
@@ -220,7 +220,7 @@ impl<'a> Macros<'a> {
                 });
 
             u_pipelines.push(pipeline);
- 
+
             first = false;
         }
 
@@ -262,7 +262,7 @@ impl<'a> Macros<'a> {
             cpass.set_bind_group(2, &self.pressure_bindgroup, &[]);
             cpass.dispatch_workgroups(work_groups[0], work_groups[1], work_groups[2]);
         }
-        
+
         for i in 0..q {
             cpass.set_pipeline(&self.u_pipelines[i]);
             cpass.set_bind_group(0, &self.lattice_dimensions.bind_group, &[]);
@@ -278,10 +278,6 @@ impl<'a> Macros<'a> {
         let pressure = read_buffer.clone_data(driver, &self.pressure_buffer);
         let ux = read_buffer.clone_data(driver, &self.ux_buffer);
         let uy = read_buffer.clone_data(driver, &self.uy_buffer);
-        MacrosData {
-            pressure,
-            ux, 
-            uy,
-        }
+        MacrosData { pressure, ux, uy }
     }
 }

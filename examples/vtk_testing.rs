@@ -6,14 +6,16 @@ use cm_lbm::wgpu_util;
 #[tokio::main]
 async fn main() {
     let driver = wgpu_util::setup_wgpu().await;
-
+    let rows = 12;
+    let cols = 20;
     let d = LatticeDimensions {
-        rows: 12,
-        cols: 12,
-        total: 12 * 12,
+        rows,
+        cols,
+        total: rows * cols,
         q: 9,
         size: 1.0,
     };
+    let t = 30;
 
     let u = LatticeDimensionsUniform::new(&driver.device, d.clone());
 
@@ -37,7 +39,7 @@ async fn main() {
         .create_command_encoder(&wgpu::CommandEncoderDescriptor {
             label: Some(encoder_label),
         });
-    macros.compute([2, 2, 1], &mut encoder, &densities);
+    macros.compute([4, 4, 1], &mut encoder, &densities);
     let submission = driver.queue.submit(Some(encoder.finish()));
     driver
         .device
@@ -49,15 +51,15 @@ async fn main() {
 
     let s = Stream2D::new(&driver.device, &densities.bindgroup_layout, &u);
 
-    for i in 1..13 {
+    for i in 1..t {
         let encoder_label = "read_encoder";
         let mut encoder = driver
             .device
             .create_command_encoder(&wgpu::CommandEncoderDescriptor {
                 label: Some(encoder_label),
             });
-        s.stream([2, 2, 1], &mut encoder, &mut densities);
-        macros.compute([2, 2, 1], &mut encoder, &densities);
+        s.stream([4, 4, 1], &mut encoder, &mut densities);
+        macros.compute([4, 4, 1], &mut encoder, &densities);
         let submission = driver.queue.submit(Some(encoder.finish()));
         driver
             .device
