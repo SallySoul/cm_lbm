@@ -40,7 +40,7 @@ impl<'a> Stream2D<'a> {
             b.add_dimensions_uniform(0);
             b.add_input_output(1, 2);
             b.add_index_ops_periodic();
-            b.add_main(dir, [8, 8, 1]);
+            b.add_main(dir, [4, 4, 1]);
             let shader_source = b.finish();
 
             let shader_label = format!("stream_shader_{:?}", dir);
@@ -87,10 +87,7 @@ impl<'a> Stream2D<'a> {
             cpass.set_bind_group(2, &densities.output_bindgroups[i], &[]);
             cpass.dispatch_workgroups(work_groups[0], work_groups[1], work_groups[2]);
         }
-        std::mem::swap(
-            &mut densities.input_bindgroups,
-            &mut densities.output_bindgroups,
-        );
+        std::mem::swap(&mut densities.input_bindgroups, &mut densities.output_bindgroups);
         std::mem::swap(&mut densities.input_buffers, &mut densities.output_buffers);
     }
 }

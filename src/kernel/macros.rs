@@ -15,13 +15,13 @@ pub struct MacrosData {
 
 pub struct Macros<'a> {
     lattice_dimensions: &'a LatticeDimensionsUniform,
-    pressure_bindgroup_layout: wgpu::BindGroupLayout,
-    u_bindgroup_layout: wgpu::BindGroupLayout,
+    pub pressure_bindgroup_layout: wgpu::BindGroupLayout,
+    pub u_bindgroup_layout: wgpu::BindGroupLayout,
     pressure_buffer: wgpu::Buffer,
     ux_buffer: wgpu::Buffer,
     uy_buffer: wgpu::Buffer,
-    pressure_bindgroup: wgpu::BindGroup,
-    u_bindgroup: wgpu::BindGroup,
+    pub pressure_bindgroup: wgpu::BindGroup,
+    pub u_bindgroup: wgpu::BindGroup,
 
     // For the compute pipelines,
     // we have a pass for each of the q densities.
@@ -144,7 +144,7 @@ impl<'a> Macros<'a> {
         pressure_first_builder.add_dimensions_uniform(0);
         pressure_first_builder.add_input_output(1, 2);
         pressure_first_builder.add_index_ops_periodic();
-        pressure_first_builder.add_main([8, 8, 1], true);
+        pressure_first_builder.add_main([4, 4, 1], true);
         let pressure_first_source = pressure_first_builder.finish();
         let pressure_first_shader_label = "pressure_shader_first";
         let pressure_first_shader_module: wgpu::ShaderModule =
@@ -159,7 +159,7 @@ impl<'a> Macros<'a> {
         pressure_rest_builder.add_dimensions_uniform(0);
         pressure_rest_builder.add_input_output(1, 2);
         pressure_rest_builder.add_index_ops_periodic();
-        pressure_rest_builder.add_main([8, 8, 1], false);
+        pressure_rest_builder.add_main([4, 4, 1], false);
         let pressure_rest_source = pressure_rest_builder.finish();
         let pressure_rest_shader_label = "pressure_shader_rest";
         let pressure_rest_shader_module: wgpu::ShaderModule =
@@ -199,7 +199,7 @@ impl<'a> Macros<'a> {
             u_builder.add_dimensions_uniform(0);
             u_builder.add_input_output(1, 2, 3);
             u_builder.add_index_ops_periodic();
-            u_builder.add_main([8, 8, 1], dir, first);
+            u_builder.add_main([4, 4, 1], dir, first);
             let shader_source = u_builder.finish();
             let shader_label = format!("u_shader_{}", i);
             let shader_module: wgpu::ShaderModule =

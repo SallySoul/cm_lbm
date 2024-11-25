@@ -6,8 +6,8 @@ use cm_lbm::wgpu_util;
 #[tokio::main]
 async fn main() {
     let driver = wgpu_util::setup_wgpu().await;
-    let rows = 12;
-    let cols = 20;
+    let rows = 120;
+    let cols = 200;
     let d = LatticeDimensions {
         rows,
         cols,
@@ -15,7 +15,15 @@ async fn main() {
         q: 9,
         size: 1.0,
     };
-    let t = 30;
+    let c_params = CollisionParams {
+        c_s: 0.5,
+        delta_t: 0.1,
+        tau: 0.5,
+    };
+    let work_group_x = (cols / 4) + 1;
+    let work_group_y = (rows / 4) + 1;
+    let group_n = [work_group_x as u32, work_group_y as u32, 1];
+    let t = 300;
 
     let u = LatticeDimensionsUniform::new(&driver.device, d.clone());
 
@@ -39,7 +47,7 @@ async fn main() {
         .create_command_encoder(&wgpu::CommandEncoderDescriptor {
             label: Some(encoder_label),
         });
-    macros.compute([4, 4, 1], &mut encoder, &densities);
+    macros.compute(group_n, &mut encoder, &densities);
     let submission = driver.queue.submit(Some(encoder.finish()));
     driver
         .device
@@ -50,16 +58,19 @@ async fn main() {
     b.export("vtu_test/frame_0.vtu");
 
     let s = Stream2D::new(&driver.device, &densities.bindgroup_layout, &u);
+    let c = BGKCollision::new(&driver.device, &densities, &macros, &u, c_params); 
 
     for i in 1..t {
+        println!("t: {}", i);
         let encoder_label = "read_encoder";
         let mut encoder = driver
             .device
             .create_command_encoder(&wgpu::CommandEncoderDescriptor {
                 label: Some(encoder_label),
             });
-        s.stream([4, 4, 1], &mut encoder, &mut densities);
-        macros.compute([4, 4, 1], &mut encoder, &densities);
+        s.stream(group_n, &mut encoder, &mut densities);
+        c.collide(group_n, &mut encoder, &mut densities, &macros); 
+        macros.compute(group_n, &mut encoder, &densities);
         let submission = driver.queue.submit(Some(encoder.finish()));
         driver
             .device
