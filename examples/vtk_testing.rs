@@ -6,8 +6,8 @@ use cm_lbm::wgpu_util;
 #[tokio::main]
 async fn main() {
     let driver = wgpu_util::setup_wgpu().await;
-    let rows = 120;
-    let cols = 200;
+    let rows = 12;
+    let cols = 20;
     let d = LatticeDimensions {
         rows,
         cols,
@@ -17,13 +17,13 @@ async fn main() {
     };
     let c_params = CollisionParams {
         c_s: 0.5,
-        delta_t: 0.1,
-        tau: 0.5,
+        delta_t: 0.01,
+        tau: 0.1,
     };
     let work_group_x = (cols / 4) + 1;
     let work_group_y = (rows / 4) + 1;
     let group_n = [work_group_x as u32, work_group_y as u32, 1];
-    let t = 300;
+    let t = 30;
 
     let u = LatticeDimensionsUniform::new(&driver.device, d.clone());
 
@@ -31,8 +31,8 @@ async fn main() {
 
     let mut densities_raw = Vec::with_capacity(d.q as usize);
     for i in 0..d.q {
-        densities_raw.push(vec![0.0; d.total as usize]);
-        densities_raw[i as usize][0] = 1.0;
+        densities_raw.push(vec![0.1; d.total as usize]);
+        //densities_raw[i as usize][0] = 0.101;
     }
     let input_data = DensitiesData {
         densities: densities_raw,

@@ -40,21 +40,20 @@ var<uniform> params: CollisionParams;",
     pub fn add_input_output(
         &mut self,
         densities_group: u32,
-        pressure_group: u32,
-        output_group: u32,
+        macros_group: u32,
     ) {
         self.buffer += &format!(
             "
-@group({}) @binding(0) 
+@group({dg}) @binding(0) 
 var<storage, read_write> densities: array<f32>;
-@group({}) @binding(0) 
+@group({mg}) @binding(0) 
 var<storage, read_write> pressure: array<f32>;
-@group({}) @binding(0) 
+@group({mg}) @binding(1) 
 var<storage, read_write> ux: array<f32>;
-@group({}) @binding(1) 
+@group({mg}) @binding(2) 
 var<storage, read_write> uy: array<f32>;
 ",
-            densities_group, pressure_group, output_group, output_group
+            dg = densities_group, mg = macros_group
         );
     }
 
@@ -89,7 +88,8 @@ fn coord_to_linear(x_raw: i32, y_raw: i32) -> i32 {
             workgroup_size[0], workgroup_size[1], workgroup_size[2]
         );
 
-    // page 64
+    // page 64 from book
+    // http://literatelb.org/#org9c1d67c
         self.buffer += &format!(
             "
 fn main(@builtin(global_invocation_id) global_invocation_id: vec3<u32>) {{
@@ -105,10 +105,14 @@ fn main(@builtin(global_invocation_id) global_invocation_id: vec3<u32>) {{
 
   let input_index = coord_to_linear(x, y);
   let p = pressure[input_index];
-  let u_x = ux[input_index] / p;
-  let u_y = uy[input_index] / p;
+  var u_x = ux[input_index] / p;
+  var u_y = uy[input_index] / p;
+  if p == 0.0 {{
+    u_x = 0.0;
+    u_y = 0.0;
+  }}
    
-  let cs_2 = params.cs * params.cs;
+  let cs_2 = params.c_s * params.c_s;
   let c_dot_u = u_x * {c_x} + u_y * {c_y};
   let t1 = c_dot_u / cs_2;
   let t2 = (c_dot_u * c_dot_u) / (cs_2 * cs_2);
@@ -116,7 +120,7 @@ fn main(@builtin(global_invocation_id) global_invocation_id: vec3<u32>) {{
   let eq = {w_i} * p * (1 + t1 + t2 + t3);
 
   let d_i = densities[input_index];
-  let new_d_i = params.delta_t * (eq - d_i) / params.tau
+  let new_d_i = params.delta_t * (eq - d_i) / params.tau;
   densities[input_index] = new_d_i;
 ",
             w_i = wi, c_x = dir[0], c_y = dir[1]

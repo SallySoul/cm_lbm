@@ -77,8 +77,7 @@ impl<'a> BGKCollision<'a> {
                 &lattice_dimensions.layout,
                 &params_bindgroup_layout,
                 &densities.bindgroup_layout,
-                &macros.pressure_bindgroup_layout,
-                &macros.u_bindgroup_layout,
+                &macros.macros_bindgroup_layout,
             ],
             push_constant_ranges: &[],
         });
@@ -91,7 +90,7 @@ impl<'a> BGKCollision<'a> {
             let mut b = Collision2DBuilder::new();
             b.add_dimensions_uniform(0);
             b.add_collision_params_uniform(1);
-            b.add_input_output(2, 3, 4);
+            b.add_input_output(2, 3);
             b.add_index_ops_periodic();
             b.add_main([4, 4, 1], w_i, dir, first);
             first = false;
@@ -146,8 +145,7 @@ impl<'a> BGKCollision<'a> {
             cpass.set_bind_group(0, &self.lattice_dimensions.bind_group, &[]);
             cpass.set_bind_group(1, &self.params_bindgroup, &[]);
             cpass.set_bind_group(2, &densities.input_bindgroups[i], &[]);
-            cpass.set_bind_group(3, &macros.pressure_bindgroup, &[]);
-            cpass.set_bind_group(4, &macros.u_bindgroup, &[]);
+            cpass.set_bind_group(3, &macros.macros_bindgroup, &[]);
             cpass.dispatch_workgroups(work_groups[0], work_groups[1], work_groups[2]);
         }
     }

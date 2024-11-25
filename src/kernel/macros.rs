@@ -15,13 +15,15 @@ pub struct MacrosData {
 
 pub struct Macros<'a> {
     lattice_dimensions: &'a LatticeDimensionsUniform,
-    pub pressure_bindgroup_layout: wgpu::BindGroupLayout,
-    pub u_bindgroup_layout: wgpu::BindGroupLayout,
+    pressure_bindgroup_layout: wgpu::BindGroupLayout,
+    u_bindgroup_layout: wgpu::BindGroupLayout,
+    pub macros_bindgroup_layout: wgpu::BindGroupLayout,
     pressure_buffer: wgpu::Buffer,
     ux_buffer: wgpu::Buffer,
     uy_buffer: wgpu::Buffer,
-    pub pressure_bindgroup: wgpu::BindGroup,
-    pub u_bindgroup: wgpu::BindGroup,
+    pressure_bindgroup: wgpu::BindGroup,
+    u_bindgroup: wgpu::BindGroup,
+    pub macros_bindgroup: wgpu::BindGroup,
 
     // For the compute pipelines,
     // we have a pass for each of the q densities.
@@ -90,6 +92,43 @@ impl<'a> Macros<'a> {
                 label: Some("u_layout"),
             });
 
+        let macros_bindgroup_layout =
+            device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+                entries: &[
+                    wgpu::BindGroupLayoutEntry {
+                        binding: 0,
+                        visibility: wgpu::ShaderStages::COMPUTE,
+                        ty: wgpu::BindingType::Buffer {
+                            ty: wgpu::BufferBindingType::Storage { read_only: false },
+                            has_dynamic_offset: false,
+                            min_binding_size: None,
+                        },
+                        count: None,
+                    },
+                    wgpu::BindGroupLayoutEntry {
+                        binding: 1,
+                        visibility: wgpu::ShaderStages::COMPUTE,
+                        ty: wgpu::BindingType::Buffer {
+                            ty: wgpu::BufferBindingType::Storage { read_only: false },
+                            has_dynamic_offset: false,
+                            min_binding_size: None,
+                        },
+                        count: None,
+                    },
+                    wgpu::BindGroupLayoutEntry {
+                        binding: 2,
+                        visibility: wgpu::ShaderStages::COMPUTE,
+                        ty: wgpu::BindingType::Buffer {
+                            ty: wgpu::BufferBindingType::Storage { read_only: false },
+                            has_dynamic_offset: false,
+                            min_binding_size: None,
+                        },
+                        count: None,
+                    },
+                ],
+                label: Some("macros_bindgroup_layout"),
+            });
+
         let pressure_bindgroup_label = "pressure_bindgroup";
         let pressure_bindgroup = device.create_bind_group(&wgpu::BindGroupDescriptor {
             label: Some(pressure_bindgroup_label),
@@ -111,6 +150,26 @@ impl<'a> Macros<'a> {
                 },
                 wgpu::BindGroupEntry {
                     binding: 1,
+                    resource: uy_buffer.as_entire_binding(),
+                },
+            ],
+        });
+
+        let macros_bindgroup_label = "macros_bindgroup";
+        let macros_bindgroup = device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: Some(macros_bindgroup_label),
+            layout: &macros_bindgroup_layout,
+            entries: &[
+                wgpu::BindGroupEntry {
+                    binding: 0,
+                    resource: pressure_buffer.as_entire_binding(),
+                },
+                wgpu::BindGroupEntry {
+                    binding: 1,
+                    resource: ux_buffer.as_entire_binding(),
+                },
+                wgpu::BindGroupEntry {
+                    binding: 2,
                     resource: uy_buffer.as_entire_binding(),
                 },
             ],
@@ -236,6 +295,8 @@ impl<'a> Macros<'a> {
             pressure_first_pipeline,
             pressure_rest_pipeline,
             u_pipelines,
+            macros_bindgroup,
+            macros_bindgroup_layout,
         }
     }
 
