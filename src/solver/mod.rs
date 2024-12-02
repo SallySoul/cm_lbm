@@ -1,9 +1,11 @@
 mod bounce_back;
 mod dimensions_uniform;
+mod distributions;
 mod faces;
 
 pub use bounce_back::*;
 pub use dimensions_uniform::*;
+pub use distributions::*;
 pub use faces::*;
 
 use crate::*;
@@ -15,22 +17,19 @@ use vtkio::model::*;
 struct StreamPipelines {}
 
 pub struct Solver {
-    grid_dimensions: AABB<3>,
+    grid_dimensions: AABB3,
 
     // coord AABBs for mutually exclusive faces
     faces: Faces,
 
     grid_dimensions_uniform: GridDimensionsUniform,
 
-    // bounce_back: BounceBack,
-    /// Distributions
-    /// In W * H * L * Q buffer
-    // distributions_buffer: wgpu::Buffer,
+    bounce_back: BounceBack,
 
-    // Buffer for extra space during streaming
-    // and to store density for moments
-    // W * H * L
-    // density_stream_buffer: wgpu::Buffer,
+    distributions: Distributions,
+
+    density_read_map: ReadMapBuffer,
+    velocity_read_map: ReadMapBuffer,
 
     // W * H * L * 3
     // velocity_buffer: wgpu::Buffer,
@@ -53,20 +52,26 @@ pub struct Solver {
 impl Solver {
     pub fn new(
         device: &wgpu::Device,
-        grid_dimensions: AABB<3>,
+        bounce_back: BounceBack,
+        grid_dimensions: AABB3,
         omega: f32,
         inflow_density: f32,
-        inflow_accel: f32,
         inflow_velocity: Vec3,
     ) -> Self {
         let faces = Faces::new(grid_dimensions);
         let grid_dimensions_uniform = GridDimensionsUniform::new(device, &grid_dimensions);
+        let distributions = Distributions::new(device, &grid_dimensions);
+        let density_read_map = ReadMapBuffer::new(device, &grid_dimensions, 1);
+        let velocity_read_map = ReadMapBuffer::new(device, &grid_dimensions, 3);
 
         Solver {
             grid_dimensions,
             faces,
             grid_dimensions_uniform,
-            // bounce_back,
+            bounce_back,
+            distributions,
+            density_read_map,
+            velocity_read_map,
             // density_stream_buffer,
             // velocity_buffer,
             // stream_pipelines,

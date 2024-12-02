@@ -19,11 +19,20 @@ async fn main() {
 
     let driver = setup_wgpu().await;
 
-    let _bounce_back = BounceBack::new_spheres(
+    let bounce_back = BounceBack::new_spheres(
         &driver.device,
         &spheres,
         &grid_dimensions,
         &world_coords,
         Some("vtk_test/bounce_back.vtu"),
+    );
+
+    let _solver = Solver::new(
+        &driver.device,
+        bounce_back,
+        grid_dimensions,
+        omega,
+        inflow_density,
+        inflow_velocity,
     );
 }

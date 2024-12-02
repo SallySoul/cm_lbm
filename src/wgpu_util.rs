@@ -1,9 +1,10 @@
+/// The things we need to run compute shaders
 pub struct Driver {
     pub device: wgpu::Device,
     pub queue: wgpu::Queue,
 }
 
-// TODO(error handling)
+/// Create WGPU driver
 pub async fn setup_wgpu() -> Driver {
     let instance = wgpu::Instance::default();
 
@@ -20,4 +21,21 @@ pub async fn setup_wgpu() -> Driver {
         .expect("Failed to create device");
 
     Driver { device, queue }
+}
+
+/// Create a generic storage buffer
+/// that we can copy to and from a map buffer
+pub fn create_storage_buffer(
+    device: &wgpu::Device,
+    buffer_byte_size: u64,
+    label: Option<&str>,
+) -> wgpu::Buffer {
+    device.create_buffer(&wgpu::BufferDescriptor {
+        label,
+        size: buffer_byte_size,
+        usage: wgpu::BufferUsages::STORAGE
+            | wgpu::BufferUsages::COPY_SRC
+            | wgpu::BufferUsages::COPY_DST,
+        mapped_at_creation: false,
+    })
 }
