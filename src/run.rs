@@ -1,12 +1,12 @@
 use crate::*;
 
-pub fn run(solver: &mut Solver, n_it: usize, n_out: usize) {
+pub fn run(driver: &Driver, solver: &mut Solver, n_it: usize, n_out: usize) {
     println!("Starting Run");
     let mut iter = 0;
 
     println!("  writing first snapshot {:06}", iter);
     //solver.moments();
-    solver.write_vtk(0);
+    solver.write_vtk(driver, &format!("vtk_test/moments_{:06}.vtu", iter));
     while iter < n_it {
         iter += 1;
 
@@ -19,7 +19,7 @@ pub fn run(solver: &mut Solver, n_it: usize, n_out: usize) {
 
         if write_output {
             println!("    writing snapshot {:06}", iter);
-            solver.write_vtk(iter);
+            //solver.write_vtk(iter);
         }
     }
 }

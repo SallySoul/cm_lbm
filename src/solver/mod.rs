@@ -30,6 +30,8 @@ pub struct Solver {
     // coord AABBs for mutually exclusive faces
     faces: Faces,
 
+    work_groups: [u32; 3],
+
     grid_dimensions_uniform: GridDimensionsUniform,
 
     bc_params_uniform: BCParamsUniform,
@@ -97,6 +99,7 @@ impl Solver {
         Solver {
             grid_dimensions,
             faces,
+            work_groups,
             grid_dimensions_uniform,
             bc_params_uniform,
             bounce_back,
@@ -110,11 +113,29 @@ impl Solver {
         }
     }
 
+    pub fn moments(&self, encoder: &mut wgpu::CommandEncoder) {
+        self.moments.compute(
+            &self.work_groups,
+            encoder,
+            &self.distributions,
+            &self.grid_dimensions_uniform,
+        );
+    }
+
+    pub fn write_vtk(&self, driver: &Driver, path: &str) {
+        println!("  writing VTK: {}", path);
+        let mut grid = VTKGrid::new(&self.grid_dimensions);
+
+        let (densities, velocities) = self.moments.get_data(driver);
+        grid.add_attribute("density".to_string(), 1, densities);
+        grid.add_attribute("velocity".to_string(), 3, velocities);
+
+        grid.write(path);
+    }
+
     pub fn streaming(&mut self) {}
 
     pub fn collision(&mut self) {}
-
-    pub fn write_vtk(&mut self, _iter: usize) {}
 }
 /*
     pub fn equilibrium_init(&mut self) {

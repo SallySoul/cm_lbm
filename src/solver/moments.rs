@@ -1,5 +1,6 @@
 use crate::*;
 use bytemuck::{Pod, Zeroable};
+use std::sync::Arc;
 use wgpu::util::DeviceExt;
 
 pub struct Moments {
@@ -134,5 +135,39 @@ impl Moments {
             velocity_read_map,
             pipeline,
         }
+    }
+
+    pub fn compute(
+        &self,
+        work_groups: &[u32; 3],
+        encoder: &mut wgpu::CommandEncoder,
+        distributions: &Distributions,
+        grid_dimensions_uniform: &GridDimensionsUniform,
+    ) {
+        let mut cpass =
+            encoder.begin_compute_pass(&wgpu::ComputePassDescriptor {
+                label: Some("ic_pass"),
+                timestamp_writes: None,
+            });
+
+        cpass.set_pipeline(&self.pipeline);
+        cpass.set_bind_group(0, &grid_dimensions_uniform.bindgroup, &[]);
+        cpass.set_bind_group(1, &distributions.bindgroup, &[]);
+        cpass.set_bind_group(2, &self.bindgroup, &[]);
+        cpass.dispatch_workgroups(
+            work_groups[0],
+            work_groups[1],
+            work_groups[2],
+        );
+    }
+
+    pub fn get_data(&self, driver: &Driver) -> (Vec<f32>, Vec<f32>) {
+        let densities = self
+            .density_read_map
+            .clone_data(driver, &self.density_buffer);
+        let velocities = self
+            .velocity_read_map
+            .clone_data(driver, &self.velocity_buffer);
+        (densities, velocities)
     }
 }

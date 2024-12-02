@@ -228,7 +228,12 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
             );
         }
 
-        self.buffer += "  velocity /= density;\n}\n";
+        self.buffer += "  
+  velocity /= density;
+  densities[index] = density;
+  velocities[index] = velocity;
+}
+";
     }
 
     pub fn finish(self, debug_path: &str) -> String {
