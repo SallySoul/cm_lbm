@@ -1,10 +1,6 @@
 use crate::*;
 
-pub fn f_equilibrium(
-    directions: &[Vec3; 27],
-    density: f32,
-    velocity: Vec3,
-) -> [f32; 27] {
+pub fn f_equilibrium(directions: &[Vec3; 27], density: f32, velocity: Vec3) -> [f32; 27] {
     let mut result = [0.0; 27];
     for q_i in 0..27 {
         // Calculate equilibrium

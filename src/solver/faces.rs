@@ -1,7 +1,7 @@
 use crate::*;
 use nalgebra::matrix;
 
-/// Mutually exclusive AABBs for each face 
+/// Mutually exclusive AABBs for each face
 /// of the domain
 pub struct Faces {
     pub top: AABB<3>,

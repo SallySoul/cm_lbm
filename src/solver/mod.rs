@@ -1,11 +1,10 @@
 mod bounce_back;
-mod faces;
 mod dimensions_uniform;
+mod faces;
 
 pub use bounce_back::*;
-pub use faces::*;
 pub use dimensions_uniform::*;
-
+pub use faces::*;
 
 use crate::*;
 use lattice::*;
@@ -13,10 +12,7 @@ use nalgebra::{matrix, vector};
 use std::collections::HashSet;
 use vtkio::model::*;
 
-struct StreamPipelines {
-
-}
-
+struct StreamPipelines {}
 
 pub struct Solver {
     grid_dimensions: AABB<3>,
@@ -27,12 +23,11 @@ pub struct Solver {
     grid_dimensions_uniform: GridDimensionsUniform,
 
     // bounce_back: BounceBack,
-
     /// Distributions
     /// In W * H * L * Q buffer
     // distributions_buffer: wgpu::Buffer,
 
-    // Buffer for extra space during streaming 
+    // Buffer for extra space during streaming
     // and to store density for moments
     // W * H * L
     // density_stream_buffer: wgpu::Buffer,
@@ -50,7 +45,6 @@ pub struct Solver {
     // err lets have collision just do it
     // we can pull it out later
     // collision_pipeline: wgpu::ComputePipeline,
-
     omega: f32,
     inflow_density: f32,
     inflow_velocity: Vec3,
@@ -65,11 +59,10 @@ impl Solver {
         inflow_accel: f32,
         inflow_velocity: Vec3,
     ) -> Self {
-
         let faces = Faces::new(grid_dimensions);
         let grid_dimensions_uniform = GridDimensionsUniform::new(device, &grid_dimensions);
 
-    Solver {
+        Solver {
             grid_dimensions,
             faces,
             grid_dimensions_uniform,
