@@ -1,0 +1,18 @@
+[package]
+name = "lbm3"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+nalgebra = { version = "0.33.2", features = ["bytemuck"] }
+num-traits = "0.2.19"
+rand = "0.8.5"
+time = "0.3.36"
+vtkio = "0.6.3"
+bytemuck = { version = "1.19.0", features = ["derive"] }
+num = "0.4.3"
+tokio = { version = "1.40.0", features = ["full"] }
+wgpu = "22.1.0"
+
+[dev-dependencies]
+float-cmp = "0.10.0"
