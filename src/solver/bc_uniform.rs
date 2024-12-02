@@ -4,32 +4,27 @@ use wgpu::util::DeviceExt;
 
 #[derive(Copy, Clone, Pod, Zeroable)]
 #[repr(C)]
-struct GridDimensionsGPU {
-    max: Coord<3>,
-    total: i32,
+struct BCParamsGPU {
+    velocity: Vec3,
+    density: f32,
 }
 
-/// We pass in the GridDimensions AABB to most shaders
-/// as a uniform.
-/// This tracks the bindgroup for that uniform.
-pub struct GridDimensionsUniform {
+pub struct BCParamsUniform {
     pub layout: wgpu::BindGroupLayout,
     pub bindgroup: wgpu::BindGroup,
     pub buffer: wgpu::Buffer,
 }
 
-impl GridDimensionsUniform {
-    pub fn new(device: &wgpu::Device, grid_dimensions: &AABB3) -> Self {
-        println!("Creating grid dimensions uniform");
-
-        let max = (grid_dimensions.column(1) - grid_dimensions.column(0)).add_scalar(1);
-        let data = GridDimensionsGPU {
-            max,
-            total: box_buffer_size(grid_dimensions) as i32,
+impl BCParamsUniform {
+    pub fn new(device: &wgpu::Device, velocity: Vec3, density: f32) -> Self {
+        println!("Creating BC params uniform");
+        let data = BCParamsGPU {
+            velocity,
+            density,
         };
 
         let layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
-            label: Some("grid_dimensions_layout"),
+            label: Some("bc_params_layout"),
             entries: &[wgpu::BindGroupLayoutEntry {
                 binding: 0,
                 visibility: wgpu::ShaderStages::COMPUTE,
@@ -37,7 +32,7 @@ impl GridDimensionsUniform {
                     ty: wgpu::BufferBindingType::Uniform,
                     has_dynamic_offset: false,
                     min_binding_size: wgpu::BufferSize::new(
-                        std::mem::size_of::<GridDimensionsGPU>() as u64,
+                        std::mem::size_of::<BCParamsGPU>() as u64,
                     ),
                 },
                 count: None,
@@ -45,13 +40,13 @@ impl GridDimensionsUniform {
         });
 
         let buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-            label: Some("grid_dimensions_buffer"),
+            label: Some("bc_params_buffer"),
             contents: bytemuck::bytes_of(&data),
             usage: wgpu::BufferUsages::UNIFORM,
         });
 
         let bindgroup = device.create_bind_group(&wgpu::BindGroupDescriptor {
-            label: Some("grid_dimensions_bindgroup"),
+            label: Some("bc_params_bindgroup"),
             layout: &layout,
             entries: &[wgpu::BindGroupEntry {
                 binding: 0,
@@ -59,10 +54,13 @@ impl GridDimensionsUniform {
             }],
         });
 
-        GridDimensionsUniform {
+        BCParamsUniform {
             layout,
             bindgroup,
             buffer,
         }
+
     }
 }
+
+

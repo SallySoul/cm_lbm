@@ -1,3 +1,4 @@
 /target
 *.vtu
-vtk_test
+/vtk_test
+/shader_debug

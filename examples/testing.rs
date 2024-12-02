@@ -1,8 +1,10 @@
 use lbm3::*;
+use log::info;
 use nalgebra::{matrix, vector};
 
 #[tokio::main]
 async fn main() {
+    println!("Start Run");
     let grid_dimensions = matrix![0, 100; 0, 100; 0, 100];
     //let omega = 1.85;
     let omega = 0.5;
@@ -27,9 +29,12 @@ async fn main() {
         Some("vtk_test/bounce_back.vtu"),
     );
 
+    let bc_params = BCParamsUniform::new(&driver.device, inflow_velocity, inflow_density);
+
     let _solver = Solver::new(
-        &driver.device,
+        &driver,
         bounce_back,
+        bc_params,
         grid_dimensions,
         omega,
         inflow_density,

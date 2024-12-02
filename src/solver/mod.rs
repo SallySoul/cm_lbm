@@ -1,12 +1,18 @@
+mod bc_uniform;
 mod bounce_back;
 mod dimensions_uniform;
 mod distributions;
 mod faces;
+mod init_op;
+mod shader_template;
 
+pub use bc_uniform::*;
 pub use bounce_back::*;
 pub use dimensions_uniform::*;
 pub use distributions::*;
 pub use faces::*;
+pub use init_op::*;
+pub use shader_template::*;
 
 use crate::*;
 use lattice::*;
@@ -23,6 +29,8 @@ pub struct Solver {
     faces: Faces,
 
     grid_dimensions_uniform: GridDimensionsUniform,
+
+    bc_params_uniform: BCParamsUniform,
 
     bounce_back: BounceBack,
 
@@ -51,23 +59,42 @@ pub struct Solver {
 
 impl Solver {
     pub fn new(
-        device: &wgpu::Device,
+        driver: &Driver,
         bounce_back: BounceBack,
+        bc_params_uniform: BCParamsUniform,
         grid_dimensions: AABB3,
         omega: f32,
         inflow_density: f32,
         inflow_velocity: Vec3,
     ) -> Self {
+        let device = &driver.device;
         let faces = Faces::new(grid_dimensions);
         let grid_dimensions_uniform = GridDimensionsUniform::new(device, &grid_dimensions);
         let distributions = Distributions::new(device, &grid_dimensions);
         let density_read_map = ReadMapBuffer::new(device, &grid_dimensions, 1);
         let velocity_read_map = ReadMapBuffer::new(device, &grid_dimensions, 3);
 
+        let max = (grid_dimensions.column(1) - grid_dimensions.column(0)).add_scalar(1);
+
+        let work_groups = [
+            (max[0] / 4 + 1) as u32,
+            (max[1] / 4 + 1) as u32,
+            (max[2] / 4 + 1) as u32,
+        ];
+
+        set_initial_conditions(
+            driver,
+            &distributions,
+            &bc_params_uniform,
+            &grid_dimensions_uniform,
+            &work_groups,
+        );
+
         Solver {
             grid_dimensions,
             faces,
             grid_dimensions_uniform,
+            bc_params_uniform,
             bounce_back,
             distributions,
             density_read_map,
