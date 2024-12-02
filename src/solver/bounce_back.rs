@@ -55,7 +55,8 @@ impl BounceBack {
             let mut normals_raw = Vec::with_capacity(3 * buffer_size);
             let mut is_bb = Vec::with_capacity(buffer_size);
             for coord in coord_iter(*grid_dimensions) {
-                let flag_index = coord_to_linear_in_box(&coord, grid_dimensions);
+                let flag_index =
+                    coord_to_linear_in_box(&coord, grid_dimensions);
                 let flag = flags[flag_index];
                 if flag < 0 {
                     is_bb.push(0.0);
@@ -81,43 +82,50 @@ impl BounceBack {
     }
 
     fn new(device: &wgpu::Device, flags: &[i32], normals: &[Vec3]) -> Self {
-        let normal_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-            label: Some("bounce_back_normal_buffer"),
-            contents: bytemuck::cast_slice(&normals),
-            usage: wgpu::BufferUsages::STORAGE,
-        });
+        let normal_buffer =
+            device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                label: Some("bounce_back_normal_buffer"),
+                contents: bytemuck::cast_slice(&normals),
+                usage: wgpu::BufferUsages::STORAGE,
+            });
 
-        let flag_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-            label: Some("bounce_back_flag_buffer"),
-            contents: bytemuck::cast_slice(&flags),
-            usage: wgpu::BufferUsages::STORAGE,
-        });
+        let flag_buffer =
+            device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                label: Some("bounce_back_flag_buffer"),
+                contents: bytemuck::cast_slice(&flags),
+                usage: wgpu::BufferUsages::STORAGE,
+            });
 
-        let layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
-            label: Some("bounce_back_layout"),
-            entries: &[
-                wgpu::BindGroupLayoutEntry {
-                    binding: 0,
-                    visibility: wgpu::ShaderStages::COMPUTE,
-                    ty: wgpu::BindingType::Buffer {
-                        ty: wgpu::BufferBindingType::Storage { read_only: true },
-                        has_dynamic_offset: false,
-                        min_binding_size: None,
+        let layout =
+            device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+                label: Some("bounce_back_layout"),
+                entries: &[
+                    wgpu::BindGroupLayoutEntry {
+                        binding: 0,
+                        visibility: wgpu::ShaderStages::COMPUTE,
+                        ty: wgpu::BindingType::Buffer {
+                            ty: wgpu::BufferBindingType::Storage {
+                                read_only: true,
+                            },
+                            has_dynamic_offset: false,
+                            min_binding_size: None,
+                        },
+                        count: None,
                     },
-                    count: None,
-                },
-                wgpu::BindGroupLayoutEntry {
-                    binding: 1,
-                    visibility: wgpu::ShaderStages::COMPUTE,
-                    ty: wgpu::BindingType::Buffer {
-                        ty: wgpu::BufferBindingType::Storage { read_only: true },
-                        has_dynamic_offset: false,
-                        min_binding_size: None,
+                    wgpu::BindGroupLayoutEntry {
+                        binding: 1,
+                        visibility: wgpu::ShaderStages::COMPUTE,
+                        ty: wgpu::BindingType::Buffer {
+                            ty: wgpu::BufferBindingType::Storage {
+                                read_only: true,
+                            },
+                            has_dynamic_offset: false,
+                            min_binding_size: None,
+                        },
+                        count: None,
                     },
-                    count: None,
-                },
-            ],
-        });
+                ],
+            });
 
         let bindgroup = device.create_bind_group(&wgpu::BindGroupDescriptor {
             label: Some("bounce_back_bindgroup"),

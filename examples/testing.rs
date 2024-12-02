@@ -1,5 +1,4 @@
 use lbm3::*;
-use log::info;
 use nalgebra::{matrix, vector};
 
 #[tokio::main]
@@ -29,15 +28,9 @@ async fn main() {
         Some("vtk_test/bounce_back.vtu"),
     );
 
-    let bc_params = BCParamsUniform::new(&driver.device, inflow_velocity, inflow_density);
+    let bc_params =
+        BCParamsUniform::new(&driver.device, inflow_velocity, inflow_density);
 
-    let _solver = Solver::new(
-        &driver,
-        bounce_back,
-        bc_params,
-        grid_dimensions,
-        omega,
-        inflow_density,
-        inflow_velocity,
-    );
+    let _solver =
+        Solver::new(&driver, bounce_back, bc_params, grid_dimensions, omega);
 }

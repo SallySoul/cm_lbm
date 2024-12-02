@@ -1,4 +1,5 @@
 use crate::*;
+use std::io::prelude::*;
 
 pub struct ShaderBuilder {
     buffer: String,
@@ -49,6 +50,18 @@ var<storage, read_write> distributions: array<f32>;
         );
     }
 
+    pub fn add_moments_bindgroup(&mut self, group: u32) {
+        self.buffer += &format!(
+            "
+@group({g}) @binding(0) 
+var<storage, read_write> densities: array<f32>;
+@group({g}) @binding(1) 
+var<storage, read_write> velocities: array<vec3<f32>>;
+",
+            g = group
+        );
+    }
+
     pub fn add_index_ops_periodic(&mut self) {
         self.buffer += "
 fn coord_to_linear(x_raw: i32, y_raw: i32, z_raw: i32) -> i32 {
@@ -80,7 +93,16 @@ fn coord_to_linear(x_raw: i32, y_raw: i32, z_raw: i32) -> i32 {
 }";
     }
 
-    fn add_invocation_id_block(&mut self) {
+    fn add_main_invocation_id_block(&mut self, workgroup_size: [u32; 3]) {
+        self.buffer += &format!(
+            "
+@compute
+@workgroup_size({}, {}, {})
+fn main(@builtin(global_invocation_id) global_invocation_id: vec3<u32>) {{
+",
+            workgroup_size[0], workgroup_size[1], workgroup_size[2]
+        );
+
         self.buffer += "
   let x = i32(global_invocation_id.x);
   if x > dimensions.max[0] {{
@@ -106,7 +128,8 @@ const DIRECTIONS = array(
 ";
         for q_i in 0..27 {
             let dir = directions[q_i];
-            self.buffer += &format!("  vec3({}.0, {}.0, {}.0),\n", dir[0], dir[1], dir[2]);
+            self.buffer +=
+                &format!("  vec3({}.0, {}.0, {}.0),\n", dir[0], dir[1], dir[2]);
         }
         self.buffer += ");";
 
@@ -116,7 +139,10 @@ const OFFSETS = array(
 ";
         for q_i in 0..27 {
             let offset = offsets[q_i];
-            self.buffer += &format!("  vec3({}, {}, {}),\n", offset[0], offset[1], offset[2]);
+            self.buffer += &format!(
+                "  vec3({}, {}, {}),\n",
+                offset[0], offset[1], offset[2]
+            );
         }
         self.buffer += ");";
 
@@ -163,22 +189,16 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
     let base = index * 27;
 ";
         for q_i in 0..27 {
-            self.buffer += &format!("  distributions[base + {qi}] = values[{qi}];\n", qi = q_i);
+            self.buffer += &format!(
+                "  distributions[base + {qi}] = values[{qi}];\n",
+                qi = q_i
+            );
         }
         self.buffer += "}\n";
     }
 
     pub fn add_init_main(&mut self, workgroup_size: [u32; 3]) {
-        self.buffer += &format!(
-            "
-@compute
-@workgroup_size({}, {}, {})
-fn main(@builtin(global_invocation_id) global_invocation_id: vec3<u32>) {{
-",
-            workgroup_size[0], workgroup_size[1], workgroup_size[2]
-        );
-
-        self.add_invocation_id_block();
+        self.add_main_invocation_id_block(workgroup_size);
 
         self.buffer += "
   let result = f_equilibrium(bc_params.density, bc_params.velocity);
@@ -189,7 +209,31 @@ fn main(@builtin(global_invocation_id) global_invocation_id: vec3<u32>) {{
         self.buffer += "}";
     }
 
-    pub fn finish(self) -> String {
+    pub fn add_moments_main(&mut self, workgroup_size: [u32; 3]) {
+        self.add_main_invocation_id_block(workgroup_size);
+        self.buffer += "
+  let index = coord_to_linear(x, y, z);
+  let base = index * 27;
+  var density = 0.0;
+  var velocity = vec3(0.0, 0.0, 0.0);
+  ";
+        for q_i in 0..27 {
+            self.buffer += &format!(
+                "  density += distributions[base + {qi}];\n",
+                qi = q_i
+            );
+            self.buffer += &format!(
+                "  velocity += DIRECTIONS[{qi}] + distributions[base + {qi}];\n",
+                qi = q_i
+            );
+        }
+
+        self.buffer += "  velocity /= density;\n}\n";
+    }
+
+    pub fn finish(self, debug_path: &str) -> String {
+        let mut output = std::fs::File::create(debug_path).unwrap();
+        write!(output, "{}", self.buffer).unwrap();
         self.buffer
     }
 }

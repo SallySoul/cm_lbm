@@ -1,6 +1,10 @@
 use crate::*;
 
-pub fn f_equilibrium(directions: &[Vec3; 27], density: f32, velocity: Vec3) -> [f32; 27] {
+pub fn f_equilibrium(
+    directions: &[Vec3; 27],
+    density: f32,
+    velocity: Vec3,
+) -> [f32; 27] {
     let mut result = [0.0; 27];
     for q_i in 0..27 {
         // Calculate equilibrium
@@ -18,7 +22,10 @@ pub fn f_equilibrium(directions: &[Vec3; 27], density: f32, velocity: Vec3) -> [
     result
 }
 
-pub fn moments(directions: &[Vec3; 27], distributions: &[f32; 27]) -> (f32, Vec3) {
+pub fn moments(
+    directions: &[Vec3; 27],
+    distributions: &[f32; 27],
+) -> (f32, Vec3) {
     let mut density = 0.0;
     let mut velocity = Vec3::zero();
     for q_i in 0..27 {
@@ -56,11 +63,17 @@ mod unit_tests {
         let input_velocity = vector![1.0, 0.0, 0.0];
         let input_density = 1.0;
         let directions = gen_d3q27_directions();
-        let distributions = f_equilibrium(&directions, input_density, input_velocity);
+        let distributions =
+            f_equilibrium(&directions, input_density, input_velocity);
         let (density, velocity) = moments(&directions, &distributions);
         assert_approx_eq!(f32, density, 1.0);
         for d in 0..3 {
-            assert_approx_eq!(f32, velocity[d], input_velocity[d], epsilon = 0.000001);
+            assert_approx_eq!(
+                f32,
+                velocity[d],
+                input_velocity[d],
+                epsilon = 0.000001
+            );
         }
     }
 }

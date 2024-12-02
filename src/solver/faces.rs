@@ -25,8 +25,10 @@ impl Faces {
         let top = matrix![x_min, x_max; y_max, y_max; z_min, z_max;];
         let left = matrix![x_min, x_min; y_min + 1, y_max - 1; z_min, z_max;];
         let right = matrix![x_max, x_max; y_min + 1, y_max - 1; z_min, z_max;];
-        let front = matrix![x_min + 1, x_max - 1; y_min + 1, y_max - 1;  z_min, z_min];
-        let back = matrix![x_min + 1, x_max - 1; y_min + 1, y_max - 1; z_max, z_max];
+        let front =
+            matrix![x_min + 1, x_max - 1; y_min + 1, y_max - 1;  z_min, z_min];
+        let back =
+            matrix![x_min + 1, x_max - 1; y_min + 1, y_max - 1; z_max, z_max];
 
         Faces {
             top,

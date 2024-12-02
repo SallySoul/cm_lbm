@@ -4,6 +4,7 @@ mod dimensions_uniform;
 mod distributions;
 mod faces;
 mod init_op;
+mod moments;
 mod shader_template;
 
 pub use bc_uniform::*;
@@ -12,6 +13,7 @@ pub use dimensions_uniform::*;
 pub use distributions::*;
 pub use faces::*;
 pub use init_op::*;
+pub use moments::*;
 pub use shader_template::*;
 
 use crate::*;
@@ -36,8 +38,7 @@ pub struct Solver {
 
     distributions: Distributions,
 
-    density_read_map: ReadMapBuffer,
-    velocity_read_map: ReadMapBuffer,
+    moments: Moments,
 
     // W * H * L * 3
     // velocity_buffer: wgpu::Buffer,
@@ -53,8 +54,6 @@ pub struct Solver {
     // we can pull it out later
     // collision_pipeline: wgpu::ComputePipeline,
     omega: f32,
-    inflow_density: f32,
-    inflow_velocity: Vec3,
 }
 
 impl Solver {
@@ -64,23 +63,28 @@ impl Solver {
         bc_params_uniform: BCParamsUniform,
         grid_dimensions: AABB3,
         omega: f32,
-        inflow_density: f32,
-        inflow_velocity: Vec3,
     ) -> Self {
         let device = &driver.device;
         let faces = Faces::new(grid_dimensions);
-        let grid_dimensions_uniform = GridDimensionsUniform::new(device, &grid_dimensions);
+        let grid_dimensions_uniform =
+            GridDimensionsUniform::new(device, &grid_dimensions);
         let distributions = Distributions::new(device, &grid_dimensions);
-        let density_read_map = ReadMapBuffer::new(device, &grid_dimensions, 1);
-        let velocity_read_map = ReadMapBuffer::new(device, &grid_dimensions, 3);
 
-        let max = (grid_dimensions.column(1) - grid_dimensions.column(0)).add_scalar(1);
+        let max = (grid_dimensions.column(1) - grid_dimensions.column(0))
+            .add_scalar(1);
 
         let work_groups = [
             (max[0] / 4 + 1) as u32,
             (max[1] / 4 + 1) as u32,
             (max[2] / 4 + 1) as u32,
         ];
+
+        let moments = Moments::new(
+            device,
+            &grid_dimensions,
+            &distributions,
+            &grid_dimensions_uniform,
+        );
 
         set_initial_conditions(
             driver,
@@ -97,15 +101,12 @@ impl Solver {
             bc_params_uniform,
             bounce_back,
             distributions,
-            density_read_map,
-            velocity_read_map,
+            moments,
             // density_stream_buffer,
             // velocity_buffer,
             // stream_pipelines,
             // copy_pipelines,
             omega,
-            inflow_density,
-            inflow_velocity,
         }
     }
 

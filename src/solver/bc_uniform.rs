@@ -18,32 +18,31 @@ pub struct BCParamsUniform {
 impl BCParamsUniform {
     pub fn new(device: &wgpu::Device, velocity: Vec3, density: f32) -> Self {
         println!("Creating BC params uniform");
-        let data = BCParamsGPU {
-            velocity,
-            density,
-        };
+        let data = BCParamsGPU { velocity, density };
 
-        let layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
-            label: Some("bc_params_layout"),
-            entries: &[wgpu::BindGroupLayoutEntry {
-                binding: 0,
-                visibility: wgpu::ShaderStages::COMPUTE,
-                ty: wgpu::BindingType::Buffer {
-                    ty: wgpu::BufferBindingType::Uniform,
-                    has_dynamic_offset: false,
-                    min_binding_size: wgpu::BufferSize::new(
-                        std::mem::size_of::<BCParamsGPU>() as u64,
-                    ),
-                },
-                count: None,
-            }],
-        });
+        let layout =
+            device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+                label: Some("bc_params_layout"),
+                entries: &[wgpu::BindGroupLayoutEntry {
+                    binding: 0,
+                    visibility: wgpu::ShaderStages::COMPUTE,
+                    ty: wgpu::BindingType::Buffer {
+                        ty: wgpu::BufferBindingType::Uniform,
+                        has_dynamic_offset: false,
+                        min_binding_size: wgpu::BufferSize::new(
+                            std::mem::size_of::<BCParamsGPU>() as u64,
+                        ),
+                    },
+                    count: None,
+                }],
+            });
 
-        let buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-            label: Some("bc_params_buffer"),
-            contents: bytemuck::bytes_of(&data),
-            usage: wgpu::BufferUsages::UNIFORM,
-        });
+        let buffer =
+            device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                label: Some("bc_params_buffer"),
+                contents: bytemuck::bytes_of(&data),
+                usage: wgpu::BufferUsages::UNIFORM,
+            });
 
         let bindgroup = device.create_bind_group(&wgpu::BindGroupDescriptor {
             label: Some("bc_params_bindgroup"),
@@ -59,8 +58,5 @@ impl BCParamsUniform {
             bindgroup,
             buffer,
         }
-
     }
 }
-
-

@@ -7,17 +7,24 @@ pub struct ReadMapBuffer {
 }
 
 impl ReadMapBuffer {
-    pub fn new(device: &wgpu::Device, grid_dimensions: &AABB3, components: usize) -> Self {
-        let size_bytes =
-            (components * box_buffer_size(grid_dimensions) * std::mem::size_of::<f32>()) as u64;
+    pub fn new(
+        device: &wgpu::Device,
+        grid_dimensions: &AABB3,
+        components: usize,
+    ) -> Self {
+        let size_bytes = (components
+            * box_buffer_size(grid_dimensions)
+            * std::mem::size_of::<f32>()) as u64;
         let map_buffer_label = "data_map";
-        let map_buffer: std::sync::Arc<wgpu::Buffer> =
-            std::sync::Arc::new(device.create_buffer(&wgpu::BufferDescriptor {
+        let map_buffer: std::sync::Arc<wgpu::Buffer> = std::sync::Arc::new(
+            device.create_buffer(&wgpu::BufferDescriptor {
                 label: Some(map_buffer_label),
                 size: size_bytes,
-                usage: wgpu::BufferUsages::MAP_READ | wgpu::BufferUsages::COPY_DST,
+                usage: wgpu::BufferUsages::MAP_READ
+                    | wgpu::BufferUsages::COPY_DST,
                 mapped_at_creation: false,
-            }));
+            }),
+        );
 
         ReadMapBuffer {
             map_buffer,
@@ -25,7 +32,11 @@ impl ReadMapBuffer {
         }
     }
 
-    pub fn clone_data(&self, driver: &Driver, buffer: &wgpu::Buffer) -> Vec<f32> {
+    pub fn clone_data(
+        &self,
+        driver: &Driver,
+        buffer: &wgpu::Buffer,
+    ) -> Vec<f32> {
         let data_buffer = Arc::new(Mutex::new(Vec::new()));
         let capturable = data_buffer.clone();
         self.read_data(driver, buffer, move |slice| {
@@ -42,13 +53,19 @@ impl ReadMapBuffer {
         f: F,
     ) {
         let encoder_label = "read_encoder";
-        let mut encoder = driver
-            .device
-            .create_command_encoder(&wgpu::CommandEncoderDescriptor {
+        let mut encoder = driver.device.create_command_encoder(
+            &wgpu::CommandEncoderDescriptor {
                 label: Some(encoder_label),
-            });
+            },
+        );
 
-        encoder.copy_buffer_to_buffer(buffer, 0, &self.map_buffer, 0, self.size_bytes);
+        encoder.copy_buffer_to_buffer(
+            buffer,
+            0,
+            &self.map_buffer,
+            0,
+            self.size_bytes,
+        );
 
         let submission = driver.queue.submit(Some(encoder.finish()));
 
@@ -57,16 +74,17 @@ impl ReadMapBuffer {
             .poll(wgpu::Maintain::WaitForSubmissionIndex(submission));
 
         let capturable = self.map_buffer.clone();
-        self.map_buffer
-            .slice(..)
-            .map_async(wgpu::MapMode::Read, move |result| {
+        self.map_buffer.slice(..).map_async(
+            wgpu::MapMode::Read,
+            move |result| {
                 result.expect("READ FAILED");
                 let view = capturable.slice(..).get_mapped_range();
                 let data_view: &[f32] = bytemuck::cast_slice(&view);
                 f(data_view);
                 drop(view);
                 capturable.unmap();
-            });
+            },
+        );
 
         driver.device.poll(wgpu::Maintain::Wait);
     }
@@ -78,17 +96,24 @@ pub struct WriteMapBuffer {
 }
 
 impl WriteMapBuffer {
-    pub fn new(device: &wgpu::Device, grid_dimensions: &AABB3, components: usize) -> Self {
-        let size_bytes =
-            (components * box_buffer_size(grid_dimensions) * std::mem::size_of::<f32>()) as u64;
+    pub fn new(
+        device: &wgpu::Device,
+        grid_dimensions: &AABB3,
+        components: usize,
+    ) -> Self {
+        let size_bytes = (components
+            * box_buffer_size(grid_dimensions)
+            * std::mem::size_of::<f32>()) as u64;
         let map_buffer_label = "write_data_map";
-        let map_buffer: std::sync::Arc<wgpu::Buffer> =
-            std::sync::Arc::new(device.create_buffer(&wgpu::BufferDescriptor {
+        let map_buffer: std::sync::Arc<wgpu::Buffer> = std::sync::Arc::new(
+            device.create_buffer(&wgpu::BufferDescriptor {
                 label: Some(map_buffer_label),
                 size: size_bytes,
-                usage: wgpu::BufferUsages::MAP_WRITE | wgpu::BufferUsages::COPY_SRC,
+                usage: wgpu::BufferUsages::MAP_WRITE
+                    | wgpu::BufferUsages::COPY_SRC,
                 mapped_at_creation: false,
-            }));
+            }),
+        );
 
         WriteMapBuffer {
             map_buffer,
@@ -103,27 +128,34 @@ impl WriteMapBuffer {
         f: F,
     ) {
         let encoder_label = "write_encoder";
-        let mut encoder = driver
-            .device
-            .create_command_encoder(&wgpu::CommandEncoderDescriptor {
+        let mut encoder = driver.device.create_command_encoder(
+            &wgpu::CommandEncoderDescriptor {
                 label: Some(encoder_label),
-            });
+            },
+        );
 
         let capturable = self.map_buffer.clone();
-        self.map_buffer
-            .slice(..)
-            .map_async(wgpu::MapMode::Write, move |result| {
+        self.map_buffer.slice(..).map_async(
+            wgpu::MapMode::Write,
+            move |result| {
                 result.expect("READ FAILED");
                 let mut view = capturable.slice(..).get_mapped_range_mut();
                 let data_view: &mut [f32] = bytemuck::cast_slice_mut(&mut view);
                 f(data_view);
                 drop(view);
                 capturable.unmap();
-            });
+            },
+        );
 
         driver.device.poll(wgpu::Maintain::Wait);
 
-        encoder.copy_buffer_to_buffer(&self.map_buffer, 0, buffer, 0, self.size_bytes);
+        encoder.copy_buffer_to_buffer(
+            &self.map_buffer,
+            0,
+            buffer,
+            0,
+            self.size_bytes,
+        );
 
         let submission = driver.queue.submit(Some(encoder.finish()));
 

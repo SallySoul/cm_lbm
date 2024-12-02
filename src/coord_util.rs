@@ -8,8 +8,10 @@ pub use num_traits::{Num, One, Zero};
 
 pub type Vec3 = nalgebra::SVector<f32, 3>;
 
-pub type Coord<const GRID_DIMENSION: usize> = nalgebra::SVector<i32, { GRID_DIMENSION }>;
-pub type AABB<const GRID_DIMENSION: usize> = nalgebra::SMatrix<i32, { GRID_DIMENSION }, 2>;
+pub type Coord<const GRID_DIMENSION: usize> =
+    nalgebra::SVector<i32, { GRID_DIMENSION }>;
+pub type AABB<const GRID_DIMENSION: usize> =
+    nalgebra::SMatrix<i32, { GRID_DIMENSION }, 2>;
 
 /// Axis Aligned Bounding Box, inclusive of min and max
 pub type AABB3 = AABB<3>;
@@ -102,7 +104,8 @@ pub fn linear_to_coord_in_box<const GRID_DIMENSION: usize>(
     index: usize,
     b: &AABB<GRID_DIMENSION>,
 ) -> Coord<GRID_DIMENSION> {
-    let bound: Coord<GRID_DIMENSION> = (b.column(1) - b.column(0)).add_scalar(1);
+    let bound: Coord<GRID_DIMENSION> =
+        (b.column(1) - b.column(0)).add_scalar(1);
 
     let mut result = Coord::zero();
     let mut index_accumulator = index;
@@ -119,12 +122,16 @@ pub fn linear_to_coord_in_box<const GRID_DIMENSION: usize>(
     result + b.column(0)
 }
 
-pub fn box_buffer_size<const GRID_DIMENSION: usize>(view_box: &AABB<GRID_DIMENSION>) -> usize {
+pub fn box_buffer_size<const GRID_DIMENSION: usize>(
+    view_box: &AABB<GRID_DIMENSION>,
+) -> usize {
     let diff = (view_box.column(1) - view_box.column(0)).add_scalar(1);
     real_buffer_size(&diff)
 }
 
-pub fn real_buffer_size<const GRID_DIMENSION: usize>(space_size: &Coord<GRID_DIMENSION>) -> usize {
+pub fn real_buffer_size<const GRID_DIMENSION: usize>(
+    space_size: &Coord<GRID_DIMENSION>,
+) -> usize {
     let mut accumulator = 1;
     for d in space_size {
         accumulator *= *d as usize;
@@ -169,7 +176,9 @@ pub fn coord_iter(aabb: AABB<3>) -> impl std::iter::Iterator<Item = Coord<3>> {
     (0..size).map(move |index| linear_to_coord_in_box(index, &aabb))
 }
 
-pub fn cell_coord_iter(aabb: AABB<3>) -> impl std::iter::Iterator<Item = Coord<3>> {
+pub fn cell_coord_iter(
+    aabb: AABB<3>,
+) -> impl std::iter::Iterator<Item = Coord<3>> {
     let mut cell_bounds = aabb.clone();
     cell_bounds.set_column(1, &cell_bounds.column(1).add_scalar(-1));
     let size = box_buffer_size(&cell_bounds);
@@ -304,12 +313,18 @@ mod unit_tests {
     #[test]
     fn coord_to_linear_in_box_test() {
         assert_eq!(
-            coord_to_linear_in_box(&vector![5, 5, 5], &matrix![0, 9; 0, 9; 0, 9]),
+            coord_to_linear_in_box(
+                &vector![5, 5, 5],
+                &matrix![0, 9; 0, 9; 0, 9]
+            ),
             linear_index(&vector![5, 5, 5], &vector![10, 10, 10])
         );
 
         assert_eq!(
-            coord_to_linear_in_box(&vector![5, 5, 5], &matrix![2, 8; 2, 8; 2, 8]),
+            coord_to_linear_in_box(
+                &vector![5, 5, 5],
+                &matrix![2, 8; 2, 8; 2, 8]
+            ),
             linear_index(&vector![3, 3, 3], &vector![7, 7, 7])
         );
     }

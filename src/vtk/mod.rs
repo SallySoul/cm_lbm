@@ -40,7 +40,8 @@ impl VTKGrid {
             let n_6 = cell_coord + vector![1, 0, 1];
             let n_7 = cell_coord + vector![1, 1, 1];
 
-            let vertices = [&cell_coord, &n_3, &n_6, &n_1, &n_2, &n_5, &n_7, &n_4];
+            let vertices =
+                [&cell_coord, &n_3, &n_6, &n_1, &n_2, &n_5, &n_7, &n_4];
             for v in vertices {
                 let index = coord_to_linear_in_box(v, grid_dimensions) as u64;
                 connectivity.push(index);
@@ -65,7 +66,12 @@ impl VTKGrid {
     }
 
     /// Adds a field to the grid points
-    pub fn add_attribute(&mut self, name: String, num_comp: u32, values: Vec<f32>) {
+    pub fn add_attribute(
+        &mut self,
+        name: String,
+        num_comp: u32,
+        values: Vec<f32>,
+    ) {
         self.point_attributes
             .push(Attribute::DataArray(DataArrayBase {
                 name,

@@ -22,33 +22,36 @@ impl GridDimensionsUniform {
     pub fn new(device: &wgpu::Device, grid_dimensions: &AABB3) -> Self {
         println!("Creating grid dimensions uniform");
 
-        let max = (grid_dimensions.column(1) - grid_dimensions.column(0)).add_scalar(1);
+        let max = (grid_dimensions.column(1) - grid_dimensions.column(0))
+            .add_scalar(1);
         let data = GridDimensionsGPU {
             max,
             total: box_buffer_size(grid_dimensions) as i32,
         };
 
-        let layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
-            label: Some("grid_dimensions_layout"),
-            entries: &[wgpu::BindGroupLayoutEntry {
-                binding: 0,
-                visibility: wgpu::ShaderStages::COMPUTE,
-                ty: wgpu::BindingType::Buffer {
-                    ty: wgpu::BufferBindingType::Uniform,
-                    has_dynamic_offset: false,
-                    min_binding_size: wgpu::BufferSize::new(
-                        std::mem::size_of::<GridDimensionsGPU>() as u64,
-                    ),
-                },
-                count: None,
-            }],
-        });
+        let layout =
+            device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+                label: Some("grid_dimensions_layout"),
+                entries: &[wgpu::BindGroupLayoutEntry {
+                    binding: 0,
+                    visibility: wgpu::ShaderStages::COMPUTE,
+                    ty: wgpu::BindingType::Buffer {
+                        ty: wgpu::BufferBindingType::Uniform,
+                        has_dynamic_offset: false,
+                        min_binding_size: wgpu::BufferSize::new(
+                            std::mem::size_of::<GridDimensionsGPU>() as u64,
+                        ),
+                    },
+                    count: None,
+                }],
+            });
 
-        let buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-            label: Some("grid_dimensions_buffer"),
-            contents: bytemuck::bytes_of(&data),
-            usage: wgpu::BufferUsages::UNIFORM,
-        });
+        let buffer =
+            device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                label: Some("grid_dimensions_buffer"),
+                contents: bytemuck::bytes_of(&data),
+                usage: wgpu::BufferUsages::UNIFORM,
+            });
 
         let bindgroup = device.create_bind_group(&wgpu::BindGroupDescriptor {
             label: Some("grid_dimensions_bindgroup"),
