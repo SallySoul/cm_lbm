@@ -24,6 +24,8 @@ pub struct Solver {
     // coord AABBs for mutually exclusive faces
     faces: Faces,
 
+    grid_dimensions_uniform: GridDimensionsUniform,
+
     // bounce_back: BounceBack,
 
     /// Distributions
@@ -56,6 +58,7 @@ pub struct Solver {
 
 impl Solver {
     pub fn new(
+        device: &wgpu::Device,
         grid_dimensions: AABB<3>,
         omega: f32,
         inflow_density: f32,
@@ -64,9 +67,12 @@ impl Solver {
     ) -> Self {
 
         let faces = Faces::new(grid_dimensions);
+        let grid_dimensions_uniform = GridDimensionsUniform::new(device, &grid_dimensions);
+
     Solver {
             grid_dimensions,
             faces,
+            grid_dimensions_uniform,
             // bounce_back,
             // density_stream_buffer,
             // velocity_buffer,
@@ -77,6 +83,12 @@ impl Solver {
             inflow_velocity,
         }
     }
+
+    pub fn streaming(&mut self) {}
+
+    pub fn collision(&mut self) {}
+
+    pub fn write_vtk(&mut self, _iter: usize) {}
 }
 /*
     pub fn equilibrium_init(&mut self) {

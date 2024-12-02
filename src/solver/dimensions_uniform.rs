@@ -1,50 +1,41 @@
 use wgpu::util::DeviceExt;
+use crate::*;
 
-pub struct LatticeDimensionsUniform {
-    pub dimensions: crate::LatticeDimensions,
+/// We pass in the GridDimensions AABB to most shaders
+/// as a uniform.
+/// This tracks the bindgroup for that uniform.
+pub struct GridDimensionsUniform {
     pub layout: wgpu::BindGroupLayout,
     pub bindgroup: wgpu::BindGroup,
     pub buffer: wgpu::Buffer,
 }
 
-impl LatticeDimensionsUniform {
-    pub fn new(device: &wgpu::Device, dimensions: crate::LatticeDimensions) -> Self {
-        let layout_label = "dimension_layout";
+impl GridDimensionsUniform {
+    pub fn new(device: &wgpu::Device, grid_dimensions: &AABB3 ) -> Self {
         let layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
-            label: Some(layout_label),
-            entries: &[
-                wgpu::BindGroupLayoutEntry {
-                    binding: 0,
-                    visibility: wgpu::ShaderStages::COMPUTE,
-                    ty: wgpu::BindingType::Buffer {
-                        ty: wgpu::BufferBindingType::Storage { read_only: true},
-                        has_dynamic_offset: false,
-                        min_binding_size: None,
-                    },
-                    count: None,
+            label: Some("grid_dimensions_layout"),
+            entries: &[wgpu::BindGroupLayoutEntry {
+                binding: 0,
+                visibility: wgpu::ShaderStages::COMPUTE,
+                ty: wgpu::BindingType::Buffer {
+                    ty: wgpu::BufferBindingType::Uniform,
+                    has_dynamic_offset: false,
+                    min_binding_size: wgpu::BufferSize::new(std::mem::size_of::<
+                        AABB3,
+                    >() as u64),
                 },
-                wgpu::BindGroupLayoutEntry {
-                    binding: 1,
-                    visibility: wgpu::ShaderStages::COMPUTE,
-                    ty: wgpu::BindingType::Buffer {
-                        ty: wgpu::BufferBindingType::Storage { read_only: true},
-                        has_dynamic_offset: false,
-                        min_binding_size: None,
-                    },
-                    count: None,
-                },
-            ],
+                count: None,
+            }],
         });
 
         let buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-            label: None,
-            contents: bytemuck::bytes_of(&dimensions),
+            label: Some("grid_dimensions_buffer"),
+            contents: bytemuck::cast_slice(grid_dimensions.data.as_slice()),
             usage: wgpu::BufferUsages::UNIFORM,
         });
 
-        let bind_group_label = "dimensions_bg";
-        let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
-            label: Some(bind_group_label),
+        let bindgroup = device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: Some("grid_dimensions_bindgroup"),
             layout: &layout,
             entries: &[wgpu::BindGroupEntry {
                 binding: 0,
@@ -52,10 +43,9 @@ impl LatticeDimensionsUniform {
             }],
         });
 
-        LatticeDimensionsUniform {
-            dimensions,
+        GridDimensionsUniform {
             layout,
-            bind_group,
+            bindgroup,
             buffer,
         }
     }

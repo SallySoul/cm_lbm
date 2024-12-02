@@ -33,7 +33,7 @@ impl BounceBack {
         let max: Coord3 = center.add_scalar(radius);
         let sphere_bounds: AABB3 = AABB3::from_columns(&[min, max]);
         for coord in coord_iter(sphere_bounds) {
-            let flag = coord_to_linear_in_box(&coord, grid_dimensions)
+            let flag = coord_to_linear_in_box(&coord, grid_dimensions);
         }
     
         Self::new(device, &flags, &normals)

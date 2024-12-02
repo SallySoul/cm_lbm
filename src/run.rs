@@ -5,16 +5,15 @@ pub fn run(solver: &mut Solver, n_it: usize, n_out: usize) {
     let mut iter = 0;
 
     println!("  writing first snapshot {:06}", iter);
-    solver.moments();
+    //solver.moments();
     solver.write_vtk(0);
-    iter += 1;
     while iter < n_it {
+        iter += 1;
+
         println!("  iter: {}", iter);
-        let write_output = n_out > 0 && iter % n_out == 0;
+        let write_output = n_out > 0 && (iter + 1) % n_out == 0;
         println!("    streaming...");
         solver.streaming();
-        println!("    moments...");
-        solver.moments();
         println!("    collision...");
         solver.collision();
 
@@ -22,7 +21,5 @@ pub fn run(solver: &mut Solver, n_it: usize, n_out: usize) {
             println!("    writing snapshot {:06}", iter);
             solver.write_vtk(iter);
         }
-
-        iter += 1;
     }
 }
