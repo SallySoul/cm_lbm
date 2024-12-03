@@ -1,7 +1,4 @@
 use crate::*;
-use bytemuck::{Pod, Zeroable};
-use std::sync::Arc;
-use wgpu::util::DeviceExt;
 
 pub struct Moments {
     pub density_buffer: wgpu::Buffer,
@@ -21,8 +18,8 @@ impl Moments {
         grid_dimensions_uniform: &GridDimensionsUniform,
     ) -> Self {
         println!("Creating Moments");
-        let density_read_map = ReadMapBuffer::new(device, &grid_dimensions, 1);
-        let velocity_read_map = ReadMapBuffer::new(device, &grid_dimensions, 3);
+        let density_read_map = ReadMapBuffer::new(device, grid_dimensions, 1);
+        let velocity_read_map = ReadMapBuffer::new(device, grid_dimensions, 3);
         let buffer_size = box_buffer_size(grid_dimensions);
 
         let density_buffer_bytes =

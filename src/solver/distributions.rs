@@ -1,10 +1,6 @@
 use crate::*;
-use nalgebra::matrix;
-use wgpu::util::DeviceExt;
 
 pub struct Distributions {
-    buffer: wgpu::Buffer,
-    buffer_scratch: wgpu::Buffer,
     pub layout: wgpu::BindGroupLayout,
     pub bindgroup: wgpu::BindGroup,
     pub bindgroup_scratch: wgpu::BindGroup,
@@ -66,8 +62,6 @@ impl Distributions {
             });
 
         Distributions {
-            buffer,
-            buffer_scratch,
             layout,
             bindgroup,
             bindgroup_scratch,

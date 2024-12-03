@@ -1,6 +1,4 @@
 use crate::*;
-use bytemuck::{Pod, Zeroable};
-use wgpu::util::DeviceExt;
 
 pub fn set_initial_conditions(
     driver: &Driver,
@@ -22,7 +20,8 @@ pub fn set_initial_conditions(
     shader_builder.add_index_ops_periodic();
     shader_builder.add_equil_fn();
     shader_builder.add_init_main([4, 4, 4], stream_figure);
-    let shader_source = shader_builder.finish(&format!("shader_debug/init_{}.wgsl", stream_figure));
+    let shader_source = shader_builder
+        .finish(&format!("shader_debug/init_{}.wgsl", stream_figure));
 
     let pipeline_layout =
         device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {

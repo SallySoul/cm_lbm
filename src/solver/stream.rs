@@ -1,5 +1,4 @@
 use crate::*;
-use nalgebra::matrix;
 
 /// Streaming operator
 ///
@@ -77,7 +76,6 @@ impl Stream {
             work_groups,
         }
     }
-
 
     /// Stream distributions, writing to distributions_scratch
     /// NOTE! the caller is responsible for submitting the commands,

@@ -44,7 +44,10 @@ pub fn create_storage_buffer(
 /// I don't fully understand it, but it seems safe to do this prior to
 /// * reading data
 /// * swapping distributions buffers
-pub fn run_submission<F: FnOnce(&mut wgpu::CommandEncoder)>(driver: &Driver, f: F) {
+pub fn run_submission<F: FnOnce(&mut wgpu::CommandEncoder)>(
+    driver: &Driver,
+    f: F,
+) {
     let mut encoder =
         driver
             .device

@@ -7,7 +7,6 @@ async fn main() {
     let _ = std::fs::remove_dir_all(output_dir);
     std::fs::create_dir(output_dir).unwrap();
 
-
     println!("Start Specular Figure");
     let grid_dimensions = matrix![0, 100; 0, 100; 0, 100];
 

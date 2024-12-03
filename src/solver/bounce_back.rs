@@ -1,5 +1,4 @@
 use crate::*;
-use nalgebra::matrix;
 use wgpu::util::DeviceExt;
 
 /// Bindgroup for bounceback cells
