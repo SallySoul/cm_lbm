@@ -51,6 +51,16 @@ var<uniform> face_dimensions: GridDimensions;
         );
     }
 
+    pub fn add_interior_uniform(&mut self, group: u32) {
+        self.buffer += &format!(
+            "
+@group({}) @binding(0) 
+var<uniform> interior_dimensions: GridDimensions;
+    ",
+            group
+        );
+    }
+
     pub fn add_bc_params_uniform(&mut self, group: u32) {
         self.buffer += &format!(
             "
@@ -80,6 +90,27 @@ var<storage, read_write> distributions: array<f32>;
             "
 @group({g}) @binding(0) 
 var<storage, read_write> distributions_scratch: array<f32>;
+",
+            g = group,
+        );
+    }
+
+    pub fn add_bounceback_bindgroup(&mut self, group: u32) {
+        self.buffer += &format!(
+            "
+@group({g}) @bindings(0)
+var<storage, read_write> bb_normals: array<f32>;
+@group({g}) @bindings(1)
+var<storage, read_write> bb_flag: array<i32>;
+
+fn get_normal(index: i32) -> vec3<f32> {{
+    let base = index * 3;
+    return vec3(
+        bb_normals[base],
+        bb_normals[base + 1],
+        bb_normals[base + 2],
+  ); 
+}}
 ",
             g = group,
         );
@@ -213,6 +244,41 @@ fn main(@builtin(global_invocation_id) global_invocation_id: vec3<u32>) {{
     return;
   }}
   y += 1;
+";
+    }
+
+    // xy face is interior on both axis
+    fn add_interior_main_invocation_id_block(
+        &mut self,
+        workgroup_size: [u32; 3],
+    ) {
+        self.buffer += &format!(
+            "
+@compute
+@workgroup_size({}, {}, {})
+fn main(@builtin(global_invocation_id) global_invocation_id: vec3<u32>) {{
+",
+            workgroup_size[0], workgroup_size[1], workgroup_size[2]
+        );
+
+        self.buffer += "
+  var x = i32(global_invocation_id.x);
+  if x >= interior_dimensions.max[0] {{
+    return;
+  }}
+  x += 1;
+
+  var y = i32(global_invocation_id.y);
+  if y >= interior_dimensions.max[1] {{
+    return;
+  }}
+  y += 1;
+
+  var z = i32(global_invocation_id.z);
+  if z >= interior_dimensions.max[2] {{
+    return;
+  }}
+  z += 1;
 ";
     }
 
@@ -455,6 +521,66 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
   let index = coord_to_linear(x, y, z);
   let base = index * 27;
   let coord = vec3(x, y, z);
+";
+        for q_i in 0..27 {
+            self.buffer += &format!(
+                "
+  {{
+    let n_x = x + OFFSETS[{qi}][0];
+    let n_y = y + OFFSETS[{qi}][1];
+    let n_z = z + OFFSETS[{qi}][2];
+    let n_base = coord_to_linear(n_x, n_y, n_z);
+    let d_index = n_base * 27 + {qi};
+    let q = distributions[base + {qi}];
+    distributions_scratch[d_index] = q;
+  }}",
+                qi = q_i
+            );
+        }
+        self.buffer += "  
+}
+";
+    }
+
+    pub fn add_collision_main(&mut self, workgroup_size: [u32; 3], omega: f32) {
+        self.add_interior_main_invocation_id_block(workgroup_size);
+        self.buffer += "
+  let index = coord_to_linear(x, y, z);
+  let base = index * 27;
+  let coord = vec3(x, y, z);
+  let velocity = get_velocity(index);
+  let density = densities[index];
+
+  // Collide
+  if bb_flag[index] < 0 {
+    let f_eq = f_equilibrium(density, velocity);
+";
+        for q_i in 0..27 {
+            self.buffer += &format!(
+                "
+      {{
+        let q = distributions[base + {qi}];
+        let new_q = q + {o} * (f_eq - q);
+        distributions[base + {qi}] = new_q;
+      }}
+",
+                qi = q_i,
+                o = omega
+            );
+        }
+
+        self.buffer += "
+  } 
+
+  // Specular slip
+  else {
+      let n_index = bb_flag[index];
+      let normal = get_normal(n_index);
+      let new_velocity = specular_reflect(velocity, normal);
+      let f_eq = f_equilibrium(density, new_velocity);
+      add_qi_to_distributions(index, f_eq);
+  }
+}
 ";
         for q_i in 0..27 {
             self.buffer += &format!(

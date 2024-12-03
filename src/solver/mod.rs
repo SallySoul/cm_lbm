@@ -1,5 +1,6 @@
 mod bc_uniform;
 mod bounce_back;
+mod collision;
 mod dimensions_uniform;
 mod dirichlet;
 mod distributions;
@@ -12,6 +13,7 @@ mod stream;
 
 pub use bc_uniform::*;
 pub use bounce_back::*;
+pub use collision::*;
 pub use dimensions_uniform::*;
 pub use dirichlet::*;
 pub use distributions::*;
@@ -43,7 +45,7 @@ pub struct Solver {
 
     stream: Stream,
 
-    omega: f32,
+    collision: Collision,
 }
 
 impl Solver {
@@ -120,6 +122,16 @@ impl Solver {
             &distributions,
         );
 
+        let collision = Collision::new(
+            device,
+            &grid_dimensions,
+            &grid_dimensions_uniform,
+            &moments,
+            &bounce_back,
+            &distributions,
+            omega,
+        );
+
         Solver {
             grid_dimensions,
             work_groups,
@@ -130,7 +142,7 @@ impl Solver {
             dirichlet,
             slip_surfaces,
             stream,
-            omega,
+            collision,
         }
     }
 
