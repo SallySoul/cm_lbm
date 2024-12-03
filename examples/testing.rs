@@ -32,19 +32,19 @@ async fn main() {
 
     let solver =
         Solver::new(&driver, bounce_back, bc_params, grid_dimensions, omega);
-/*
-    let mut encoder =
+    /*
+        let mut encoder =
+            driver
+                .device
+                .create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                    label: Some("moments_encoder"),
+                });
+
+        solver.moments(&mut encoder);
+        let submission = driver.queue.submit(Some(encoder.finish()));
         driver
             .device
-            .create_command_encoder(&wgpu::CommandEncoderDescriptor {
-                label: Some("moments_encoder"),
-            });
-
-    solver.moments(&mut encoder);
-    let submission = driver.queue.submit(Some(encoder.finish()));
-    driver
-        .device
-        .poll(wgpu::Maintain::WaitForSubmissionIndex(submission));
-*/
+            .poll(wgpu::Maintain::WaitForSubmissionIndex(submission));
+    */
     solver.write_vtk(&driver, "vtk_test/init.vtu");
 }

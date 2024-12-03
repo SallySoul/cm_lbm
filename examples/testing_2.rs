@@ -9,8 +9,10 @@ async fn main() {
     let grid_dimensions = matrix![0, 9; 0, 9; 0, 9];
     //let omega = 1.85;
     let omega = 0.5;
-    let inflow_density = 1.0;
-    let inflow_velocity = vector![0.0, 0.0, 0.2];
+    let ic_density = 1.0;
+    let ic_velocity = vector![-0.1, -0.1, -0.1];
+    let bc_density = 2.0;
+    let bc_velocity = vector![0.1, 0.1, 0.1];
 
     let world_coords = WorldCoords::new(vector![-50.0, -50.0, -50.0], 10.0);
     let spheres = vec![
@@ -29,18 +31,28 @@ async fn main() {
         Some("vtk_test/bounce_back.vtu"),
     );
 
-    let bc_params =
-        BCParamsUniform::new(&driver.device, inflow_velocity, inflow_density);
+    let ic_params =
+        BCParamsUniform::new(&driver.device, ic_velocity, bc_density);
 
-    let solver =
-        Solver::new(&driver, bounce_back, bc_params, grid_dimensions, omega);
+    let bc_params =
+        BCParamsUniform::new(&driver.device, bc_velocity, ic_density);
+
+    let solver = Solver::new(
+        &driver,
+        bounce_back,
+        ic_params,
+        bc_params,
+        grid_dimensions,
+        omega,
+    );
     let mut encoder =
         driver
             .device
             .create_command_encoder(&wgpu::CommandEncoderDescriptor {
                 label: Some("moments_encoder"),
             });
-
+    solver.apply_slip_surfaces(&mut encoder);
+    //solver.apply_dirichlet(&mut encoder);
     solver.moments(&mut encoder);
     let submission = driver.queue.submit(Some(encoder.finish()));
     driver
