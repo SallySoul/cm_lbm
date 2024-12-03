@@ -41,6 +41,22 @@ var<uniform> dimensions: GridDimensions;
         );
     }
 
+    pub fn add_collision_uniform(&mut self, group: u32) {
+        self.buffer += &format!(
+            "
+struct GridDimensions {{
+    max: vec3<i32>,
+    total: i32,
+}}
+@group({g}) @binding(0) 
+var<uniform> dimensions: GridDimensions;
+@group({g}) @binding(1) 
+var<uniform> interior_dimensions: GridDimensions;
+",
+            g = group
+        );
+    }
+
     pub fn add_face_uniform(&mut self, group: u32) {
         self.buffer += &format!(
             "
@@ -98,9 +114,9 @@ var<storage, read_write> distributions_scratch: array<f32>;
     pub fn add_bounceback_bindgroup(&mut self, group: u32) {
         self.buffer += &format!(
             "
-@group({g}) @bindings(0)
+@group({g}) @binding(0)
 var<storage, read_write> bb_normals: array<f32>;
-@group({g}) @bindings(1)
+@group({g}) @binding(1)
 var<storage, read_write> bb_flag: array<i32>;
 
 fn get_normal(index: i32) -> vec3<f32> {{
@@ -544,28 +560,32 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
 
     pub fn add_collision_main(&mut self, workgroup_size: [u32; 3], omega: f32) {
         self.add_interior_main_invocation_id_block(workgroup_size);
-        self.buffer += "
+        self.buffer += &format!(
+            "
   let index = coord_to_linear(x, y, z);
   let base = index * 27;
   let coord = vec3(x, y, z);
   let velocity = get_velocity(index);
   let density = densities[index];
+  let o: f32 = {o};
 
   // Collide
-  if bb_flag[index] < 0 {
+  if bb_flag[index] < 0 {{
     let f_eq = f_equilibrium(density, velocity);
-";
+",
+            o = omega
+        );
+
         for q_i in 0..27 {
             self.buffer += &format!(
                 "
       {{
         let q = distributions[base + {qi}];
-        let new_q = q + {o} * (f_eq - q);
+        let new_q = q + o * (f_eq[{qi}] - q);
         distributions[base + {qi}] = new_q;
       }}
 ",
                 qi = q_i,
-                o = omega
             );
         }
 
@@ -580,24 +600,6 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
       let f_eq = f_equilibrium(density, new_velocity);
       add_qi_to_distributions(index, f_eq);
   }
-}
-";
-        for q_i in 0..27 {
-            self.buffer += &format!(
-                "
-  {{
-    let n_x = x + OFFSETS[{qi}][0];
-    let n_y = y + OFFSETS[{qi}][1];
-    let n_z = z + OFFSETS[{qi}][2];
-    let n_base = coord_to_linear(n_x, n_y, n_z);
-    let d_index = n_base * 27 + {qi};
-    let q = distributions[base + {qi}];
-    distributions_scratch[d_index] = q;
-  }}",
-                qi = q_i
-            );
-        }
-        self.buffer += "  
 }
 ";
     }

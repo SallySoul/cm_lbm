@@ -183,6 +183,15 @@ impl Solver {
         self.distributions.swap();
     }
 
+    pub fn apply_collision(&mut self, encoder: &mut wgpu::CommandEncoder) {
+        self.collision.apply(
+            encoder,
+            &self.distributions,
+            &self.moments,
+            &self.bounce_back,
+        );
+    }
+
     pub fn write_vtk(&self, driver: &Driver, path: &str) {
         println!("  writing VTK: {}", path);
         let mut grid = VTKGrid::new(&self.grid_dimensions);
@@ -191,6 +200,4 @@ impl Solver {
         grid.add_attribute("velocity".to_string(), 3, velocities);
         grid.write(path);
     }
-
-    pub fn collision(&mut self) {}
 }

@@ -4,9 +4,9 @@ use wgpu::util::DeviceExt;
 
 #[derive(Copy, Clone, Pod, Zeroable)]
 #[repr(C)]
-struct GridDimensionsGPU {
-    max: Coord<3>,
-    total: i32,
+pub struct GridDimensionsGPU {
+    pub max: Coord<3>,
+    pub total: i32,
 }
 
 /// We pass in the GridDimensions AABB to most shaders
@@ -15,7 +15,6 @@ struct GridDimensionsGPU {
 pub struct GridDimensionsUniform {
     pub layout: wgpu::BindGroupLayout,
     pub bindgroup: wgpu::BindGroup,
-    pub buffer: wgpu::Buffer,
 }
 
 impl GridDimensionsUniform {
@@ -65,7 +64,6 @@ impl GridDimensionsUniform {
         GridDimensionsUniform {
             layout,
             bindgroup,
-            buffer,
         }
     }
 }

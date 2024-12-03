@@ -111,7 +111,7 @@ impl BounceBack {
                         visibility: wgpu::ShaderStages::COMPUTE,
                         ty: wgpu::BindingType::Buffer {
                             ty: wgpu::BufferBindingType::Storage {
-                                read_only: true,
+                                read_only: false,
                             },
                             has_dynamic_offset: false,
                             min_binding_size: None,
@@ -123,7 +123,7 @@ impl BounceBack {
                         visibility: wgpu::ShaderStages::COMPUTE,
                         ty: wgpu::BindingType::Buffer {
                             ty: wgpu::BufferBindingType::Storage {
-                                read_only: true,
+                                read_only: false,
                             },
                             has_dynamic_offset: false,
                             min_binding_size: None,
