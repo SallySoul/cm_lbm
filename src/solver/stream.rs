@@ -1,6 +1,12 @@
 use crate::*;
 use nalgebra::matrix;
 
+/// Streaming operator
+///
+/// This one is pretty simple really,
+/// we only need a pipeline that operates
+/// reads the distributions and writes to
+/// distributions_scratch
 pub struct Stream {
     pipeline: wgpu::ComputePipeline,
 
@@ -8,16 +14,19 @@ pub struct Stream {
 }
 
 impl Stream {
-    pub fn new(device: &wgpu::Device,
-               grid_dimensions: &AABB3,
-               grid_dimensions_uniform: &GridDimensionsUniform,
-               distributions: &Distributions) -> Self {
+    pub fn new(
+        device: &wgpu::Device,
+        grid_dimensions: &AABB3,
+        grid_dimensions_uniform: &GridDimensionsUniform,
+        distributions: &Distributions,
+    ) -> Self {
         println!("Creating Stream");
 
         // They don't use inclusive ranges or something?
         // add one fixes it, or I don't need it?
         // TODO: see if we can remove it?
-        let max = (grid_dimensions.column(1) - grid_dimensions.column(0)).add_scalar(1);
+        let max = (grid_dimensions.column(1) - grid_dimensions.column(0))
+            .add_scalar(1);
         let work_groups = [
             (max[0] / 4 + 1) as u32,
             (max[1] / 4 + 1) as u32,
@@ -30,10 +39,8 @@ impl Stream {
         shader_builder.add_distributions_scratch(2);
         shader_builder.add_lattice_constants();
         shader_builder.add_index_ops_periodic();
-        shader_builder.add_equil_fn();
         shader_builder.add_stream_main([4, 4, 4]);
-        let shader_source =
-            shader_builder.finish("shader_debug/stream.wgsl");
+        let shader_source = shader_builder.finish("shader_debug/stream.wgsl");
 
         let pipeline_layout =
             device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
@@ -54,8 +61,8 @@ impl Stream {
                 )),
             });
 
-        let pipeline: wgpu::ComputePipeline = device
-            .create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
+        let pipeline: wgpu::ComputePipeline =
+            device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
                 label: Some("stream_pipeline"),
                 layout: Some(&pipeline_layout),
                 module: &shader_module,
@@ -71,6 +78,10 @@ impl Stream {
         }
     }
 
+
+    /// Stream distributions, writing to distributions_scratch
+    /// NOTE! the caller is responsible for submitting the commands,
+    /// waiting for the submission to complete, and swapping the distributions buffers.
     pub fn apply(
         &self,
         encoder: &mut wgpu::CommandEncoder,
@@ -92,5 +103,4 @@ impl Stream {
             self.work_groups[2],
         );
     }
-
 }

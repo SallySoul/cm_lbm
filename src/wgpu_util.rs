@@ -39,3 +39,21 @@ pub fn create_storage_buffer(
         mapped_at_creation: false,
     })
 }
+
+/// Populate a command buffer, submit it, and wait for it to complete.
+/// I don't fully understand it, but it seems safe to do this prior to
+/// * reading data
+/// * swapping distributions buffers
+pub fn run_submission<F: FnOnce(&mut wgpu::CommandEncoder)>(driver: &Driver, f: F) {
+    let mut encoder =
+        driver
+            .device
+            .create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                label: Some("submission_encoder"),
+            });
+    f(&mut encoder);
+    let submission = driver.queue.submit(Some(encoder.finish()));
+    driver
+        .device
+        .poll(wgpu::Maintain::WaitForSubmissionIndex(submission));
+}

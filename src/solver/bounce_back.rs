@@ -81,6 +81,13 @@ impl BounceBack {
         Self::new(device, &flags, &normals)
     }
 
+    pub fn empty(device: &wgpu::Device, grid_dimensions: &AABB3) -> Self {
+        let buffer_size = box_buffer_size(grid_dimensions);
+        let flags = vec![-1; buffer_size];
+        let normals = vec![Vec3::zero()];
+        Self::new(device, &flags, &normals)
+    }
+
     fn new(device: &wgpu::Device, flags: &[i32], normals: &[Vec3]) -> Self {
         let normal_buffer =
             device.create_buffer_init(&wgpu::util::BufferInitDescriptor {

@@ -346,14 +346,26 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
         self.buffer += "}\n";
     }
 
-    pub fn add_init_main(&mut self, workgroup_size: [u32; 3]) {
+    pub fn add_init_main(
+        &mut self,
+        workgroup_size: [u32; 3],
+        stream_figure: bool,
+    ) {
         self.add_main_invocation_id_block(workgroup_size);
         self.buffer += "
-  let result = f_equilibrium(bc_params.density, bc_params.velocity);
+  var velocity = bc_params.velocity;
+";
+        if stream_figure {
+            self.buffer += "
+  if x == 2 &&  y == 2 && z == 2 {
+    velocity = vec3(1.0, 2.1, 3.2);
+  }
+";
+        }
+        self.buffer += "    
+  let result = f_equilibrium(bc_params.density, velocity);
   let index = coord_to_linear(x, y, z);
   add_qi_to_distributions(index, result);
-  densities[index] = bc_params.density;
-  set_velocity(index, bc_params.velocity);
 }
 ";
     }

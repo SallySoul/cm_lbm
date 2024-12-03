@@ -5,10 +5,10 @@ use wgpu::util::DeviceExt;
 pub fn set_initial_conditions(
     driver: &Driver,
     distributions: &Distributions,
-    moments: &Moments,
     bc_params_uniform: &BCParamsUniform,
     grid_dimensions_uniform: &GridDimensionsUniform,
     work_groups: &[u32; 3],
+    stream_figure: bool,
 ) {
     println!("Set Initial Conditions");
     let device = &driver.device;
@@ -18,12 +18,11 @@ pub fn set_initial_conditions(
     shader_builder.add_dimensions_uniform(0);
     shader_builder.add_bc_params_uniform(1);
     shader_builder.add_distributions(2);
-    shader_builder.add_moments_bindgroup(3);
     shader_builder.add_lattice_constants();
     shader_builder.add_index_ops_periodic();
     shader_builder.add_equil_fn();
-    shader_builder.add_init_main([4, 4, 4]);
-    let shader_source = shader_builder.finish("shader_debug/init.wgsl");
+    shader_builder.add_init_main([4, 4, 4], stream_figure);
+    let shader_source = shader_builder.finish(&format!("shader_debug/init_{}.wgsl", stream_figure));
 
     let pipeline_layout =
         device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
@@ -32,7 +31,6 @@ pub fn set_initial_conditions(
                 &grid_dimensions_uniform.layout,
                 &bc_params_uniform.layout,
                 &distributions.layout,
-                &moments.layout,
             ],
             push_constant_ranges: &[],
         });
@@ -70,7 +68,6 @@ pub fn set_initial_conditions(
         cpass.set_bind_group(0, &grid_dimensions_uniform.bindgroup, &[]);
         cpass.set_bind_group(1, &bc_params_uniform.bindgroup, &[]);
         cpass.set_bind_group(2, &distributions.bindgroup, &[]);
-        cpass.set_bind_group(3, &moments.bindgroup, &[]);
         cpass.dispatch_workgroups(
             work_groups[0],
             work_groups[1],

@@ -54,20 +54,12 @@ impl Solver {
         bc_params_uniform: BCParamsUniform,
         grid_dimensions: AABB3,
         omega: f32,
+        stream_figure: bool,
     ) -> Self {
         let device = &driver.device;
         let grid_dimensions_uniform =
             GridDimensionsUniform::new(device, &grid_dimensions);
         let distributions = Distributions::new(device, &grid_dimensions);
-
-        let max = (grid_dimensions.column(1) - grid_dimensions.column(0))
-            .add_scalar(1);
-
-        let work_groups = [
-            (max[0] / 4 + 1) as u32,
-            (max[1] / 4 + 1) as u32,
-            (max[2] / 4 + 1) as u32,
-        ];
 
         let moments = Moments::new(
             device,
@@ -76,14 +68,34 @@ impl Solver {
             &grid_dimensions_uniform,
         );
 
+        // They don't use inclusive ranges or something?
+        // add one fixes it, or I don't need it?
+        // TODO: see if we can remove it?
+        let max = (grid_dimensions.column(1) - grid_dimensions.column(0))
+            .add_scalar(1);
+        let work_groups = [
+            (max[0] / 4 + 1) as u32,
+            (max[1] / 4 + 1) as u32,
+            (max[2] / 4 + 1) as u32,
+        ];
+
+        // At any rate, set initial conditions, ensure moments are correct
         set_initial_conditions(
             driver,
             &distributions,
-            &moments,
             &ic_params_uniform,
             &grid_dimensions_uniform,
             &work_groups,
+            stream_figure,
         );
+        run_submission(driver, |encoder| {
+            moments.compute(
+                &work_groups,
+                encoder,
+                &distributions,
+                &grid_dimensions_uniform,
+            );
+        });
 
         let dirichlet = Dirichlet::new(
             device,
@@ -148,12 +160,15 @@ impl Solver {
         );
     }
 
-    pub fn apply_stream(&self, encoder: &mut wgpu::CommandEncoder) {
-        self.stream.apply(
-            encoder,
-            &self.distributions,
-            &self.grid_dimensions_uniform,
-        );
+    pub fn apply_stream(&mut self, driver: &Driver) {
+        run_submission(driver, |encoder| {
+            self.stream.apply(
+                encoder,
+                &self.distributions,
+                &self.grid_dimensions_uniform,
+            )
+        });
+        self.distributions.swap();
     }
 
     pub fn write_vtk(&self, driver: &Driver, path: &str) {
