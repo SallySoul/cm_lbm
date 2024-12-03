@@ -13,7 +13,7 @@ pub struct Faces {
 }
 
 impl Faces {
-    pub fn new(grid_dimensions: AABB<3>) -> Faces {
+    pub fn new(grid_dimensions: &AABB<3>) -> Faces {
         let x_min = grid_dimensions[(0, 0)];
         let x_max = grid_dimensions[(0, 1)];
         let y_min = grid_dimensions[(1, 0)];

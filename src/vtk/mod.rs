@@ -90,6 +90,18 @@ impl VTKGrid {
             }));
     }
 
+    pub fn add_flag(&mut self, name: String, values: Vec<i32>) {
+        self.point_attributes
+            .push(Attribute::DataArray(DataArrayBase {
+                name,
+                elem: ElementType::Scalars {
+                    num_comp: 1,
+                    lookup_table: None,
+                },
+                data: IOBuffer::I32(values),
+            }));
+    }
+
     /// Consume and write to specified vtu file
     pub fn write(self, path: &str) {
         Vtk {

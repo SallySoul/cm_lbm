@@ -141,10 +141,9 @@ fn coord_to_linear(x_raw: i32, y_raw: i32, z_raw: i32) -> i32 {
 fn specular_reflect(velocity: vec3<f32>, norm: vec3<f32>) -> vec3<f32> {
     let v_dot_n = dot(velocity, norm);
     if v_dot_n < 0.0 {
-        return vec3(3.0, 10.0, 3.0);
+        return velocity;
     } else {
-        return vec3(10.0, 6.0, 6.0);
-        //return velocity - (2.0 * v_dot_n * norm);
+        return velocity - (2.0 * v_dot_n * norm);
     }
 }
 ";
