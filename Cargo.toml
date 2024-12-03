@@ -13,6 +13,7 @@ bytemuck = { version = "1.19.0", features = ["derive"] }
 num = "0.4.3"
 tokio = { version = "1.40.0", features = ["full"] }
 wgpu = "22.1.0"
+simple_logger = "5.0.0"
 
 [dev-dependencies]
 float-cmp = "0.10.0"

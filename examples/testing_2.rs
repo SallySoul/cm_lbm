@@ -1,8 +1,10 @@
 use lbm3::*;
 use nalgebra::{matrix, vector};
+use simple_logger::SimpleLogger;
 
 #[tokio::main]
 async fn main() {
+    //SimpleLogger::new().init().unwrap();
     println!("Start Run");
     let grid_dimensions = matrix![0, 9; 0, 9; 0, 9];
     //let omega = 1.85;
@@ -32,7 +34,6 @@ async fn main() {
 
     let solver =
         Solver::new(&driver, bounce_back, bc_params, grid_dimensions, omega);
-/*
     let mut encoder =
         driver
             .device
@@ -45,6 +46,5 @@ async fn main() {
     driver
         .device
         .poll(wgpu::Maintain::WaitForSubmissionIndex(submission));
-*/
     solver.write_vtk(&driver, "vtk_test/init.vtu");
 }

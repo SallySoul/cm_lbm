@@ -56,7 +56,14 @@ var<storage, read_write> distributions: array<f32>;
 @group({g}) @binding(0) 
 var<storage, read_write> densities: array<f32>;
 @group({g}) @binding(1) 
-var<storage, read_write> velocities: array<vec3<f32>>;
+var<storage, read_write> velocities: array<f32>;
+
+fn set_velocity(index: i32, velocity: vec3<f32>) {{
+    let base = index * 3;
+    velocities[base] = velocity[0];
+    velocities[base + 1] = velocity[1];
+    velocities[base + 2] = velocity[2];
+}}
 ",
             g = group
         );
@@ -90,7 +97,8 @@ fn coord_to_linear(x_raw: i32, y_raw: i32, z_raw: i32) -> i32 {
   }
 
   return x * (dimensions.max[1] * dimensions.max[2]) + y * dimensions.max[2] + z;
-}";
+}
+";
     }
 
     fn add_main_invocation_id_block(&mut self, workgroup_size: [u32; 3]) {
@@ -205,7 +213,7 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
   let index = coord_to_linear(x, y, z);
   add_qi_to_distributions(index, result);
   densities[index] = bc_params.density;
-  velocities[index] = bc_params.velocity;
+  set_velocity(index, bc_params.velocity);
 ";
 
         self.buffer += "}";
@@ -233,7 +241,7 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
         self.buffer += "  
   velocity /= density;
   densities[index] = density;
-  velocities[index] = velocity;
+  set_velocity(index, velocity);
 }
 ";
     }
