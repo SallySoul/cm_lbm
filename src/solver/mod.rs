@@ -91,6 +91,7 @@ impl Solver {
         set_initial_conditions(
             driver,
             &distributions,
+            &moments,
             &bc_params_uniform,
             &grid_dimensions_uniform,
             &work_groups,
@@ -127,8 +128,16 @@ impl Solver {
         let mut grid = VTKGrid::new(&self.grid_dimensions);
 
         let (densities, velocities) = self.moments.get_data(driver);
+
+
+        println!("{:?}", velocities);
+        println!("s: {}", box_buffer_size(&self.grid_dimensions));
+        println!("l: {}", velocities.len());
+
         grid.add_attribute("density".to_string(), 1, densities);
         grid.add_attribute("velocity".to_string(), 3, velocities);
+
+
 
         grid.write(path);
     }

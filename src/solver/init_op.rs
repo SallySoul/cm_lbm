@@ -5,6 +5,7 @@ use wgpu::util::DeviceExt;
 pub fn set_initial_conditions(
     driver: &Driver,
     distributions: &Distributions,
+    moments: &Moments,
     bc_params_uniform: &BCParamsUniform,
     grid_dimensions_uniform: &GridDimensionsUniform,
     work_groups: &[u32; 3],
@@ -17,6 +18,7 @@ pub fn set_initial_conditions(
     shader_builder.add_dimensions_uniform(0);
     shader_builder.add_bc_params_uniform(1);
     shader_builder.add_distributions(2);
+    shader_builder.add_moments_bindgroup(3);
     shader_builder.add_lattice_constants();
     shader_builder.add_index_ops_periodic();
     shader_builder.add_equil_fn();
@@ -30,6 +32,7 @@ pub fn set_initial_conditions(
                 &grid_dimensions_uniform.layout,
                 &bc_params_uniform.layout,
                 &distributions.layout,
+                &moments.layout,
             ],
             push_constant_ranges: &[],
         });
@@ -67,6 +70,7 @@ pub fn set_initial_conditions(
         cpass.set_bind_group(0, &grid_dimensions_uniform.bindgroup, &[]);
         cpass.set_bind_group(1, &bc_params_uniform.bindgroup, &[]);
         cpass.set_bind_group(2, &distributions.bindgroup, &[]);
+        cpass.set_bind_group(3, &moments.bindgroup, &[]);
         cpass.dispatch_workgroups(
             work_groups[0],
             work_groups[1],

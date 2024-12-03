@@ -164,7 +164,7 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
         for q_i in 0..27 {
             self.buffer += &format!(
                 "
-{{
+  {{
      // Calculate equilibrium {qi}
      let dir = DIRECTIONS[{qi}];
      let dir_u = dot(dir, velocity);
@@ -204,6 +204,8 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
   let result = f_equilibrium(bc_params.density, bc_params.velocity);
   let index = coord_to_linear(x, y, z);
   add_qi_to_distributions(index, result);
+  densities[index] = bc_params.density;
+  velocities[index] = bc_params.velocity;
 ";
 
         self.buffer += "}";
@@ -215,15 +217,15 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
   let index = coord_to_linear(x, y, z);
   let base = index * 27;
   var density = 0.0;
-  var velocity = vec3(0.0, 0.0, 0.0);
-  ";
+  var velocity = vec3(0.0, 0.0, 0.0);\n
+";
         for q_i in 0..27 {
             self.buffer += &format!(
                 "  density += distributions[base + {qi}];\n",
                 qi = q_i
             );
             self.buffer += &format!(
-                "  velocity += DIRECTIONS[{qi}] + distributions[base + {qi}];\n",
+                "  velocity += DIRECTIONS[{qi}] * distributions[base + {qi}];\n",
                 qi = q_i
             );
         }

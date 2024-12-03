@@ -12,6 +12,7 @@ pub struct VTKGrid {
     points: IOBuffer,
     cells: Cells,
     point_attributes: Vec<Attribute>,
+    grid_dimensions: AABB3,
 }
 
 impl VTKGrid {
@@ -24,6 +25,7 @@ impl VTKGrid {
             points.push(coord[1] as f32);
             points.push(coord[2] as f32);
         }
+        assert_eq!(points.len(), buffer_size * 3);
 
         // Assemble Hexahedron elements from grid points
         let n_cells = cell_count(grid_dimensions);
@@ -62,6 +64,7 @@ impl VTKGrid {
                 types: cell_types,
             },
             point_attributes: Vec::new(),
+            grid_dimensions: *grid_dimensions,
         }
     }
 
@@ -72,6 +75,10 @@ impl VTKGrid {
         num_comp: u32,
         values: Vec<f32>,
     ) {
+        assert_eq!(
+            values.len(),
+            box_buffer_size(&self.grid_dimensions) * num_comp as usize
+        );
         self.point_attributes
             .push(Attribute::DataArray(DataArrayBase {
                 name,
