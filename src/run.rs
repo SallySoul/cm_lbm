@@ -13,9 +13,9 @@ pub fn run(driver: &Driver, solver: &mut Solver, n_it: usize, n_out: usize) {
         println!("  iter: {}", iter);
         let write_output = n_out > 0 && (iter + 1) % n_out == 0;
         println!("    streaming...");
-        solver.streaming();
+        //solver.streaming();
         println!("    collision...");
-        solver.collision();
+        //solver.collision();
 
         if write_output {
             println!("    writing snapshot {:06}", iter);

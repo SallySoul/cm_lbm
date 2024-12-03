@@ -44,8 +44,8 @@ var<uniform> dimensions: GridDimensions;
     pub fn add_face_uniform(&mut self, group: u32) {
         self.buffer += &format!(
             "
-    @group({}) @binding(0) 
-    var<uniform> face_dimensions: GridDimensions;
+@group({}) @binding(0) 
+var<uniform> face_dimensions: GridDimensions;
     ",
             group
         );
@@ -65,13 +65,23 @@ var<uniform> bc_params: BCParams;
         );
     }
 
-    pub fn add_distributions(&mut self, distributions_group: u32) {
+    pub fn add_distributions(&mut self, group: u32) {
         self.buffer += &format!(
             "
-@group({dg}) @binding(0) 
+@group({g}) @binding(0) 
 var<storage, read_write> distributions: array<f32>;
 ",
-            dg = distributions_group,
+            g = group,
+        );
+    }
+
+    pub fn add_distributions_scratch(&mut self, group: u32) {
+        self.buffer += &format!(
+            "
+@group({g}) @binding(0) 
+var<storage, read_write> distributions_scratch: array<f32>;
+",
+            g = group,
         );
     }
 
@@ -423,6 +433,33 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
   velocity /= density;
   densities[index] = density;
   set_velocity(index, velocity);
+}
+";
+    }
+
+    pub fn add_stream_main(&mut self, workgroup_size: [u32; 3]) {
+        self.add_main_invocation_id_block(workgroup_size);
+        self.buffer += "
+  let index = coord_to_linear(x, y, z);
+  let base = index * 27;
+  let coord = vec3(x, y, z);
+";
+        for q_i in 0..27 {
+            self.buffer += &format!(
+                "
+  {{
+    let n_x = x + OFFSETS[{qi}][0];
+    let n_y = y + OFFSETS[{qi}][1];
+    let n_z = z + OFFSETS[{qi}][2];
+    let n_base = coord_to_linear(n_x, n_y, n_z);
+    let d_index = n_base * 27 + {qi};
+    let q = distributions[base + {qi}];
+    distributions_scratch[d_index] = q;
+  }}",
+                qi = q_i
+            );
+        }
+        self.buffer += "  
 }
 ";
     }

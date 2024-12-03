@@ -8,6 +8,7 @@ mod init_op;
 mod moments;
 mod shader_template;
 mod slip_surfaces;
+mod stream;
 
 pub use bc_uniform::*;
 pub use bounce_back::*;
@@ -19,6 +20,7 @@ pub use init_op::*;
 pub use moments::*;
 pub use shader_template::*;
 pub use slip_surfaces::*;
+pub use stream::*;
 
 use crate::*;
 
@@ -38,6 +40,8 @@ pub struct Solver {
     dirichlet: Dirichlet,
 
     slip_surfaces: SlipSurfaces,
+
+    stream: Stream,
 
     omega: f32,
 }
@@ -97,6 +101,13 @@ impl Solver {
             &distributions,
         );
 
+        let stream = Stream::new(
+            device,
+            &grid_dimensions,
+            &grid_dimensions_uniform,
+            &distributions,
+        );
+
         Solver {
             grid_dimensions,
             work_groups,
@@ -106,6 +117,7 @@ impl Solver {
             moments,
             dirichlet,
             slip_surfaces,
+            stream,
             omega,
         }
     }
@@ -136,6 +148,14 @@ impl Solver {
         );
     }
 
+    pub fn apply_stream(&self, encoder: &mut wgpu::CommandEncoder) {
+        self.stream.apply(
+            encoder,
+            &self.distributions,
+            &self.grid_dimensions_uniform,
+        );
+    }
+
     pub fn write_vtk(&self, driver: &Driver, path: &str) {
         println!("  writing VTK: {}", path);
         let mut grid = VTKGrid::new(&self.grid_dimensions);
@@ -144,8 +164,6 @@ impl Solver {
         grid.add_attribute("velocity".to_string(), 3, velocities);
         grid.write(path);
     }
-
-    pub fn streaming(&mut self) {}
 
     pub fn collision(&mut self) {}
 }
