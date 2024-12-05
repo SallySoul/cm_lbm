@@ -44,11 +44,19 @@ impl Collision {
             max: grid_max,
             total: box_buffer_size(grid_dimensions) as i32,
         };
-
+/*
         let work_groups = [
             (interior_max[0] / 4 + 1) as u32,
             (interior_max[1] / 4 + 1) as u32,
             (interior_max[2] / 4 + 1) as u32,
+        ];
+        */
+        let max = (grid_dimensions.column(1) - grid_dimensions.column(0))
+            .add_scalar(1);
+        let work_groups = [
+            (max[0] / 4 + 1) as u32,
+            (max[1] / 4 + 1) as u32,
+            (max[2] / 4 + 1) as u32,
         ];
 
         let dimensions_layout =
@@ -118,6 +126,7 @@ impl Collision {
         shader_builder.add_index_ops_periodic();
         shader_builder.add_equil_fn();
         shader_builder.add_specular_reflection();
+        shader_builder.add_bounceback_fn();
         shader_builder.add_collision_main([4, 4, 4], omega);
         let shader_source =
             shader_builder.finish("shader_debug/collision.wgsl");

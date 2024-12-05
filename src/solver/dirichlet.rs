@@ -31,7 +31,7 @@ impl Dirichlet {
 
         // xy face interior + z = 0
         let face_aabb =
-            matrix![x_min + 1, x_max - 1; y_min + 1, y_max - 1;  0, 0];
+            matrix![x_min, x_max; y_min, y_max;  0, 0];
         let face_uniform = GridDimensionsUniform::new(device, &face_aabb);
 
         // They don't use inclusive ranges or something?

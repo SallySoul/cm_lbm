@@ -71,14 +71,15 @@ impl SlipSurfaces {
         shader_builder.add_index_ops_periodic();
         shader_builder.add_equil_fn();
         shader_builder.add_specular_reflection();
+        shader_builder.add_bounceback_fn();
 
         let mut xz_shader_builder = shader_builder.clone();
-        xz_shader_builder.add_xz_slip_main([4, 1, 4]);
+        xz_shader_builder.add_xz_bounce_main([4, 1, 4]);
         let xz_shader_source =
             xz_shader_builder.finish("shader_debug/xz_slip.wgsl");
 
         let mut yz_shader_builder = shader_builder.clone();
-        yz_shader_builder.add_yz_slip_main([1, 4, 4]);
+        yz_shader_builder.add_yz_bounce_main([1, 4, 4]);
         let yz_shader_source =
             yz_shader_builder.finish("shader_debug/yz_slip.wgsl");
 

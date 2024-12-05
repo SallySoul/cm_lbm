@@ -253,13 +253,11 @@ fn main(@builtin(global_invocation_id) global_invocation_id: vec3<u32>) {{
   if x >= face_dimensions.max[0] {{
     return;
   }}
-  x += 1;
 
   var y = i32(global_invocation_id.y);
   if y >= face_dimensions.max[1] {{
     return;
   }}
-  y += 1;
 ";
     }
 
@@ -385,6 +383,39 @@ const D3Q27_W = array(
             self.buffer += &format!("  {},\n", w);
         }
         self.buffer += ");";
+
+        self.buffer += "\n
+const D3Q27_OPP = array(
+";
+        for q_i in 0..27 {
+            let o = D3Q27_OPP[q_i];
+            self.buffer += &format!("  {},\n", o);
+        }
+        self.buffer += ");";
+    }
+
+    pub fn add_bounceback_fn(&mut self) {
+        self.buffer += "\n
+fn apply_bounce_back(index: i32) {
+  var new_q: array<f32, 27>;
+  let base = index * 27;
+";
+        for q_i in 0..27 {
+            self.buffer += &format!(
+                "
+  {{
+    let q = distributions[base + {qi}];
+    let o_i = D3Q27_OPP[{qi}];
+    new_q[o_i] = q;
+  }}
+",
+                qi = q_i
+            );
+        }
+        self.buffer += "
+ add_qi_to_distributions(index, new_q);
+}
+";
     }
 
     pub fn add_equil_fn(&mut self) {
@@ -464,6 +495,18 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
 ";
     }
 
+    pub fn add_xz_bounce_main(&mut self, workgroup_size: [u32; 3]) {
+        self.add_xz_face_main_invocation_id_block(workgroup_size);
+        self.buffer += "
+  let index_ymin = coord_to_linear(x, 0, z);
+  apply_bounce_back(index_ymin); 
+
+  let index_ymax = coord_to_linear(x, dimensions.max[1] - 1, z);
+  apply_bounce_back(index_ymax);
+}
+";
+    }
+
     pub fn add_xz_slip_main(&mut self, workgroup_size: [u32; 3]) {
         self.add_xz_face_main_invocation_id_block(workgroup_size);
         self.buffer += "
@@ -480,6 +523,18 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
   let new_ymax_velocity = specular_reflect(old_vel_ymax, vec3(0.0, -1.0, 0.0));
   let result_ymax = f_equilibrium(density_ymax, new_ymax_velocity);
   add_qi_to_distributions(index_ymax, result_ymax);
+}
+";
+    }
+
+    pub fn add_yz_bounce_main(&mut self, workgroup_size: [u32; 3]) {
+        self.add_yz_face_main_invocation_id_block(workgroup_size);
+        self.buffer += "
+  let index_xmin = coord_to_linear(0, y, z);
+  apply_bounce_back(index_xmin);
+
+  let index_xmax = coord_to_linear(dimensions.max[0] - 1, y, z);
+  apply_bounce_back(index_xmax);
 }
 ";
     }
@@ -559,7 +614,7 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
     }
 
     pub fn add_collision_main(&mut self, workgroup_size: [u32; 3], omega: f32) {
-        self.add_interior_main_invocation_id_block(workgroup_size);
+        self.add_main_invocation_id_block(workgroup_size);
         self.buffer += &format!(
             "
   let index = coord_to_linear(x, y, z);
@@ -594,11 +649,14 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
 
   // Specular slip
   else {
+      apply_bounce_back(index);
+      /*
       let n_index = bb_flag[index];
       let normal = get_normal(n_index);
       let new_velocity = specular_reflect(velocity, normal);
       let f_eq = f_equilibrium(density, new_velocity);
       add_qi_to_distributions(index, f_eq);
+      */
   }
 }
 ";
