@@ -61,9 +61,6 @@ impl GridDimensionsUniform {
             }],
         });
 
-        GridDimensionsUniform {
-            layout,
-            bindgroup,
-        }
+        GridDimensionsUniform { layout, bindgroup }
     }
 }

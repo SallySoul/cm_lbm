@@ -3,3 +3,5 @@
 /example_output
 /shader_debug
 *.txt
+*.scratch
+

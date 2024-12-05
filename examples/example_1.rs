@@ -23,9 +23,7 @@ async fn main() {
     let spheres = vec![
         (vector![12.0, 12.0, 5.0], 10.0),
         (vector![-12.0, -12.0, -10.0], 10.0),
-
     ];
-
 
     let bounce_back = BounceBack::new_spheres(
         &driver.device,
@@ -65,13 +63,11 @@ async fn main() {
 
         let write_output = (iter + 1) % n_out == 0;
         if write_output {
-            run_submission(&driver, |encoder| {solver.moments(encoder)});
+            run_submission(&driver, |encoder| solver.moments(encoder));
             solver.write_vtk(
                 &driver,
                 &format!("{}/moments_{:06}.vtu", output_dir, iter),
             );
         }
-
-        
     }
 }

@@ -44,7 +44,7 @@ impl Collision {
             max: grid_max,
             total: box_buffer_size(grid_dimensions) as i32,
         };
-/*
+        /*
         let work_groups = [
             (interior_max[0] / 4 + 1) as u32,
             (interior_max[1] / 4 + 1) as u32,
@@ -104,18 +104,21 @@ impl Collision {
                 usage: wgpu::BufferUsages::UNIFORM,
             });
 
-        let dimensions_bindgroup = device.create_bind_group(&wgpu::BindGroupDescriptor {
-            label: Some("collision_dimensions_bindgroup"),
-            layout: &dimensions_layout,
-            entries: &[wgpu::BindGroupEntry {
-                binding: 0,
-                resource: interior_buffer.as_entire_binding(),
-            },
-            wgpu::BindGroupEntry {
-                binding: 1,
-                resource: grid_buffer.as_entire_binding(),
-            }],
-        });
+        let dimensions_bindgroup =
+            device.create_bind_group(&wgpu::BindGroupDescriptor {
+                label: Some("collision_dimensions_bindgroup"),
+                layout: &dimensions_layout,
+                entries: &[
+                    wgpu::BindGroupEntry {
+                        binding: 0,
+                        resource: interior_buffer.as_entire_binding(),
+                    },
+                    wgpu::BindGroupEntry {
+                        binding: 1,
+                        resource: grid_buffer.as_entire_binding(),
+                    },
+                ],
+            });
 
         let mut shader_builder = ShaderBuilder::new();
         shader_builder.add_collision_uniform(0);
