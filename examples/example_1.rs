@@ -11,11 +11,11 @@ async fn main() {
     let grid_dimensions = matrix![0, 60; 0, 60; 0, 100];
     let omega = 1.85;
     let ic_density = 1.0;
-    let ic_velocity = vector![0.0, 0.0, 0.1];
+    let ic_velocity = vector![0.0, 0.0, 0.001];
     let bc_density = 1.0;
-    let bc_velocity = vector![0.0, 0.0, 0.1];
-    let n_it = 10000;
-    let n_out = 100;
+    let bc_velocity = vector![0.0, 0.0, 0.001];
+    let n_it = 10;
+    let n_out = 1;
 
     let driver = setup_wgpu().await;
     //let bounce_back = BounceBack::empty(&driver.device, &grid_dimensions);

@@ -206,6 +206,10 @@ fn specular_reflect(velocity: vec3<f32>, norm: vec3<f32>) -> vec3<f32> {
 ";
     }
 
+    pub fn add_cm_mrt_fn(&mut self, v: f32) {
+        add_cm_mrt_fn(&mut self.buffer, v);
+    }
+
     fn add_main_invocation_id_block(&mut self, workgroup_size: [u32; 3]) {
         self.buffer += &format!(
             "
@@ -615,36 +619,17 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
 
     pub fn add_collision_main(&mut self, workgroup_size: [u32; 3], omega: f32) {
         self.add_main_invocation_id_block(workgroup_size);
-        self.buffer += &format!(
+        self.buffer += 
             "
   let index = coord_to_linear(x, y, z);
   let base = index * 27;
   let coord = vec3(x, y, z);
   let velocity = get_velocity(index);
   let density = densities[index];
-  let o: f32 = {o};
 
   // Collide
-  if bb_flag[index] < 0 {{
-    let f_eq = f_equilibrium(density, velocity);
-",
-            o = omega
-        );
-
-        for q_i in 0..27 {
-            self.buffer += &format!(
-                "
-      {{
-        let q = distributions[base + {qi}];
-        let new_q = q + o * (f_eq[{qi}] - q);
-        distributions[base + {qi}] = new_q;
-      }}
-",
-                qi = q_i,
-            );
-        }
-
-        self.buffer += "
+  if bb_flag[index] < 0 {
+    cm_mrt(index);
   } 
 
   // Specular slip

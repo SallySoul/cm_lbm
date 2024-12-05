@@ -1,6 +1,6 @@
 pub fn add_cm_mrt_fn(buffer: &mut String, v: f32) {
     *buffer += &format!("
-fn cm_mrt(index) {{
+fn cm_mrt(index: i32) {{
     let velocity = get_velocity(index);
     let ux = velocity[0];
     let uy = velocity[1];

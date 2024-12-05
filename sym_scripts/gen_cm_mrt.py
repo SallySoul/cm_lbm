@@ -191,7 +191,7 @@ def generate():
     mbar = MBar(density)
     print(f"M Bar shape: {mbar.shape}")
 
-    result = m1 * r * (m * q - mbar)
+    result = m1 * r * ((m * q) - mbar))
     print(f"result shape: {result.shape}")
 
     i = 0
