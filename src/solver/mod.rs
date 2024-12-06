@@ -1,6 +1,7 @@
 mod bc_uniform;
 mod bounce_back;
 mod cm_mrt;
+mod cm_mrt_template;
 mod collision;
 mod dimensions_uniform;
 mod dirichlet;
@@ -11,11 +12,11 @@ mod moments;
 mod shader_template;
 mod slip_surfaces;
 mod stream;
-mod cm_mrt_template;
 
 pub use bc_uniform::*;
 pub use bounce_back::*;
 pub use cm_mrt::*;
+pub use cm_mrt_template::*;
 pub use collision::*;
 pub use dimensions_uniform::*;
 pub use dirichlet::*;
@@ -26,7 +27,6 @@ pub use moments::*;
 pub use shader_template::*;
 pub use slip_surfaces::*;
 pub use stream::*;
-pub use cm_mrt_template::*;
 
 use crate::*;
 

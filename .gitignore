@@ -3,5 +3,6 @@
 /example_output
 /shader_debug
 *.txt
+*.text
 *.scratch
-
+__pycache__

@@ -11,14 +11,15 @@ async fn main() {
     let grid_dimensions = matrix![0, 60; 0, 60; 0, 100];
     let omega = 1.85;
     let ic_density = 1.0;
-    let ic_velocity = vector![0.0, 0.0, 0.001];
+    let ic_velocity = vector![0.0, 0.0, 0.01];
     let bc_density = 1.0;
-    let bc_velocity = vector![0.0, 0.0, 0.001];
+    let bc_velocity = vector![0.0, 0.0, 0.01];
     let n_it = 10;
     let n_out = 1;
 
     let driver = setup_wgpu().await;
-    //let bounce_back = BounceBack::empty(&driver.device, &grid_dimensions);
+    let bounce_back = BounceBack::empty(&driver.device, &grid_dimensions);
+    /*
     let world_coords = WorldCoords::new(vector![-40.0, -40.0, -40.0], 1.0);
     let spheres = vec![
         (vector![12.0, 12.0, 5.0], 10.0),
@@ -32,6 +33,8 @@ async fn main() {
         &world_coords,
         Some(&format!("{}/bounce_back.vtu", output_dir)),
     );
+    */
+
     let ic_params =
         BCParamsUniform::new(&driver.device, ic_velocity, bc_density);
 
@@ -54,11 +57,11 @@ async fn main() {
         solver.apply_stream(&driver);
 
         run_submission(&driver, |encoder| {
-            solver.moments(encoder);
-            solver.apply_dirichlet(encoder);
+            //solver.moments(encoder);
+            //solver.apply_dirichlet(encoder);
             //solver.apply_slip_surfaces(encoder);
             solver.apply_collision(encoder);
-            solver.apply_dirichlet(encoder);
+            //solver.apply_dirichlet(encoder);
         });
 
         let write_output = (iter + 1) % n_out == 0;

@@ -619,8 +619,7 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
 
     pub fn add_collision_main(&mut self, workgroup_size: [u32; 3], omega: f32) {
         self.add_main_invocation_id_block(workgroup_size);
-        self.buffer += 
-            "
+        self.buffer += "
   let index = coord_to_linear(x, y, z);
   let base = index * 27;
   let coord = vec3(x, y, z);
