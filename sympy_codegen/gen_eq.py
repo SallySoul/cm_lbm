@@ -6,7 +6,7 @@ from sympy.simplify.simplify import simplify
 
 def eq_rust_header():
     return '''\
-pub fn eq_op(
+pub fn eq(
     ux: f32,
     uy: f32,
     uz: f32,

@@ -24,7 +24,7 @@ def mrt_rust_footer():
 '''
 
 def gen_mrt_ops(rust_src_dir, shader_src_dir, debug_dir):
-    print("Generating cm_mrt")
+    print("Generating mrt")
     name = "mrt"
 
     u = cm_mrt.u()
@@ -38,9 +38,9 @@ def gen_mrt_ops(rust_src_dir, shader_src_dir, debug_dir):
     f = cm_mrt.f()
     mbar = cm_mrt.MBar(density)
     eq_op = cm_mrt.f_eq(density, u)
-    mrt_op = m1 * r * m * (f - eq_op)
+    mrt_op = f + m1 * r * m * (f - eq_op)
 
-    (rust_source_body, debug_raw) = util.rust_generate_op(mrt_op)
+    (rust_source_body, debug_raw) = util.rust_generate_op(simplify(mrt_op))
     util.write_ops_debug(name, debug_raw, debug_dir)
 
     rust_source = mrt_rust_header()

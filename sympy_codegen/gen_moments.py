@@ -6,7 +6,7 @@ from sympy.simplify.simplify import simplify
 
 def moments_op_header():
     return '''\
-pub fn moments_op(f: [f32; 27]) -> (f32, [f32;3]) {
+pub fn moments(f: [f32; 27]) -> (f32, [f32;3]) {
 '''
 
 def moments_op_footer():

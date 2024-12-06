@@ -1,4 +1,4 @@
-pub fn moments_op(f: [f32; 27]) -> (f32, [f32; 3]) {
+pub fn moments(f: [f32; 27]) -> (f32, [f32; 3]) {
     let f0 = f[0];
     let f1 = f[1];
     let f2 = f[2];
