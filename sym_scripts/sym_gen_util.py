@@ -6,7 +6,7 @@ import re
 # I want to replace that with multiplication
 def remove_exponent(source_buffer):
     # For now we only see power 2
-    return re.sub(r'(u.|\([a-z+\- \d\.]*\))\*\*2', r'\1 * \1', source_buffer)
+    return re.sub(r'(u.|\([a-z*+\- \d\.]*\))\*\*2', r'\1 * \1', source_buffer)
 
 def write_results(name, source, raw, output_dir):
     print(f"write result, name: {name}, output_dir: {output_dir}")

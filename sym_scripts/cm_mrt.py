@@ -32,6 +32,37 @@ c = [
   Matrix([[-1.0], [-1.0], [-1.0]]),
 ]
 
+# Quadrature weights for equilibrium
+w = [
+    8.0 / 27.0,
+    2.0 / 27.0,
+    2.0 / 27.0,
+    2.0 / 27.0,
+    2.0 / 27.0,
+    2.0 / 27.0,
+    2.0 / 27.0,
+    1.0 / 54.0,
+    1.0 / 54.0,
+    1.0 / 54.0,
+    1.0 / 54.0,
+    1.0 / 54.0,
+    1.0 / 54.0,
+    1.0 / 54.0,
+    1.0 / 54.0,
+    1.0 / 54.0,
+    1.0 / 54.0,
+    1.0 / 54.0,
+    1.0 / 54.0,
+    1.0 / 216.0,
+    1.0 / 216.0,
+    1.0 / 216.0,
+    1.0 / 216.0,
+    1.0 / 216.0,
+    1.0 / 216.0,
+    1.0 / 216.0,
+    1.0 / 216.0,
+];
+
 # Moments
 # Eqn 35 from Li 2020 Supplemental
 # Eqn 9 from De2017 
@@ -158,6 +189,10 @@ def MBar(density):
     r[18] = 9.0 * density
     r[26] = 27.0 * density
     return Matrix([[i] for i in r])
+
+def f_eq(density, u):
+    values = [w[j] * density * (1.0 + 3.0 * c[j].dot(u) + (9.0 / 2.0) * (c[j].dot(u))**2 - (3.0 / 2.0) * (u.dot(u))) for j in range(0, 27)]
+    return Matrix([[v] for v in values])
 
 # Utility to create vector of component symbols for f
 def f():

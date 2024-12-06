@@ -47,7 +47,7 @@ pub fn moments_op(f: [f32; 27]) -> (f32, [f32;3]) {
 
 def moments_op_footer():
     return '''\
-    (density, [ux, uy, uz]) 
+    (density, [ux/density, uy/density, uz/density]) 
 }\n\n
 '''
 
@@ -77,11 +77,11 @@ def gen_ops(output_dir):
     moment_op = cm_mrt.M(Matrix([[0.0], [0.0], [0.0]])) * f
     print(f"gen_ops: moment_op shape: {moment_op.shape}")
 
-    cm_mrt_op = m1 * r * (m * f - mbar)
-    print(f"gen_ops: cm_mrt_op shape: {cm_mrt_op.shape}")
-
-    eq_op = m1 * mbar
+    eq_op = cm_mrt.f_eq(density, u)
     print(f"gen_ops: eq_op shape: {eq_op.shape}")
+
+    cm_mrt_op = m1 * r * m * (f - eq_op)
+    print(f"gen_ops: cm_mrt_op shape: {cm_mrt_op.shape}")
 
     print("Generating cm_mrt")
     (cm_mrt_source_body, cm_mrt_raw) = util.rust_generate_op(cm_mrt_op)
@@ -96,7 +96,7 @@ def gen_ops(output_dir):
     eq_source = eq_op_header()
     eq_source += eq_body
     eq_source += eq_op_footer()
-    util.write_results("eq", eq_source, eq_raw, output_dir)
+    util.write_results("eq_op", eq_source, eq_raw, output_dir)
 
     print("Generating moments_op")
     (moments_body, moments_raw) = util.rust_generate_moment_op(simplify(moment_op))
@@ -104,7 +104,7 @@ def gen_ops(output_dir):
     moments_source += util.rust_fi_def()
     moments_source += moments_body
     moments_source += moments_op_footer()
-    util.write_results("moments", moments_source, moments_raw, output_dir)
+    util.write_results("moments_op", moments_source, moments_raw, output_dir)
 
 def main():
     gen_ops("../example_output/sym_gen")
