@@ -84,3 +84,35 @@ def rust_fi_def():
     let f25 = f[25];
     let f26 = f[26];
 '''
+
+def shader_fi_def():
+    return '''\
+    let base = index * 27; 
+    let f0 = distributions[base + 0];
+    let f1 = distributions[base + 1];
+    let f2 = distributions[base + 2];
+    let f3 = distributions[base + 3];
+    let f4 = distributions[base + 4];
+    let f5 = distributions[base + 5];
+    let f6 = distributions[base + 6];
+    let f7 = distributions[base + 7];
+    let f8 = distributions[base + 8];
+    let f9 = distributions[base + 9];
+    let f10 = distributions[base + 10];
+    let f11 = distributions[base + 11];
+    let f12 = distributions[base + 12];
+    let f13 = distributions[base + 13];
+    let f14 = distributions[base + 14];
+    let f15 = distributions[base + 15];
+    let f16 = distributions[base + 16];
+    let f17 = distributions[base + 17];
+    let f18 = distributions[base + 18];
+    let f19 = distributions[base + 19];
+    let f20 = distributions[base + 20];
+    let f21 = distributions[base + 21];
+    let f22 = distributions[base + 22];
+    let f23 = distributions[base + 23];
+    let f24 = distributions[base + 24];
+    let f25 = distributions[base + 25];
+    let f26 = distributions[base + 26];
+'''

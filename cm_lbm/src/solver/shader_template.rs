@@ -14,6 +14,7 @@
 /// by this file.
 use crate::*;
 use std::io::prelude::*;
+use cm_lbm_generated::shader_ops;
 
 #[derive(Clone)]
 pub struct ShaderBuilder {
@@ -423,32 +424,7 @@ fn apply_bounce_back(index: i32) {
     }
 
     pub fn add_equil_fn(&mut self) {
-        self.buffer += "\n
-fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
-    var result: array<f32, 27>;
-";
-        for q_i in 0..27 {
-            self.buffer += &format!(
-                "
-  {{
-     // Calculate equilibrium {qi}
-     let dir = DIRECTIONS[{qi}];
-     let dir_u = dot(dir, velocity);
-     let w_i = D3Q27_W[{qi}];
-
-     let t1 = 3.0 * dir_u;
-     let t2 = 9.0 * dir_u * dir_u;
-     let t3 = -(3.0 * dot(velocity, velocity));
-
-     result[{qi}] = w_i * density * (1.0 + t1 + t2 + t3);
-  }}
-",
-                qi = q_i
-            );
-        }
-        self.buffer += "
-  return result;
-}\n";
+        self.buffer += shader_ops::wgsl_eq();
 
         self.buffer += "\n
  fn add_qi_to_distributions(index: i32, values: array<f32, 27>) {
@@ -564,28 +540,11 @@ fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
     }
 
     pub fn add_moments_main(&mut self, workgroup_size: [u32; 3]) {
+        self.buffer += shader_ops::wgsl_moments();
         self.add_main_invocation_id_block(workgroup_size);
         self.buffer += "
   let index = coord_to_linear(x, y, z);
-  let base = index * 27;
-  var density = 0.0;
-  var velocity = vec3(0.0, 0.0, 0.0);\n
-";
-        for q_i in 0..27 {
-            self.buffer += &format!(
-                "  density += distributions[base + {qi}];\n",
-                qi = q_i
-            );
-            self.buffer += &format!(
-                "  velocity += DIRECTIONS[{qi}] * distributions[base + {qi}];\n",
-                qi = q_i
-            );
-        }
-
-        self.buffer += "  
-  velocity /= density;
-  densities[index] = density;
-  set_velocity(index, velocity);
+  moments(index);
 }
 ";
     }

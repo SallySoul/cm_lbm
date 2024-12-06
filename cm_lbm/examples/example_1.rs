@@ -1,4 +1,4 @@
-use lbm3::*;
+use cm_lbm::*;
 use nalgebra::{matrix, vector};
 
 #[tokio::main]

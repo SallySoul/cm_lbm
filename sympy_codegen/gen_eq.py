@@ -21,6 +21,25 @@ def eq_rust_footer():
 }\n\n
 '''
 
+def eq_shader_header():
+    return '''\
+pub fn wgsl_eq() -> &'static str {
+    &"
+fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
+    let ux = velocity[0];
+    let uy = velocity[1];
+    let uz = velocity[2];
+    var result: array<f32, 27>;
+'''
+
+def eq_shader_footer():
+    return '''\
+    return result;
+}
+"
+}
+'''
+
 def gen_eq_ops(rust_src_dir, shader_src_dir, debug_dir):
     print("Generating eq_op")
     name = "eq"
@@ -30,10 +49,15 @@ def gen_eq_ops(rust_src_dir, shader_src_dir, debug_dir):
 
     eq_op = cm_mrt.f_eq(density, u)
 
-    (rust_source_body, debug_raw) = util.rust_generate_op(simplify(eq_op))
+    (source_body, debug_raw) = util.rust_generate_op(simplify(eq_op))
     util.write_ops_debug(name, debug_raw, debug_dir)
 
     rust_source = eq_rust_header()
-    rust_source += rust_source_body
+    rust_source += source_body
     rust_source += eq_rust_footer()
     util.write_rust_ops(name, rust_source, rust_src_dir)
+
+    shader_source = eq_shader_header()
+    shader_source += source_body
+    shader_source += eq_shader_footer()
+    util.write_rust_ops(name, shader_source, shader_src_dir) 

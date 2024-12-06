@@ -1,10 +1,10 @@
-pub fn eq(
-    ux: f32,
-    uy: f32,
-    uz: f32,
-    density: f32,
-) -> [f32; 27] {
-    let mut result = [0.0; 27];
+pub fn wgsl_eq() -> &'static str {
+    &"
+fn f_equilibrium(density: f32, velocity: vec3<f32>) -> array<f32, 27> {
+    let ux = velocity[0];
+    let uy = velocity[1];
+    let uz = velocity[2];
+    var result: array<f32, 27>;
 result[0] = density*(-0.444444444444444*ux * ux - 0.444444444444444*uy * uy - 0.444444444444444*uz * uz + 0.296296296296296);
 
 result[1] = density*(0.222222222222222*ux * ux + 0.222222222222222*ux - 0.111111111111111*uy * uy - 0.111111111111111*uz * uz + 0.0740740740740741);
@@ -59,7 +59,7 @@ result[25] = -0.00462962962962963*density*(1.5*ux * ux + 3.0*ux + 1.5*uy * uy - 
 
 result[26] = -0.00462962962962963*density*(1.5*ux * ux + 3.0*ux + 1.5*uy * uy + 3.0*uy + 1.5*uz * uz + 3.0*uz - 4.5*(ux + uy + uz) * (ux + uy + uz) - 1.0);
 
-  result
+    return result;
 }
-
-
+"
+}
