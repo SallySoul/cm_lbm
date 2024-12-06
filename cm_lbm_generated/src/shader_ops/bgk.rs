@@ -1,39 +1,41 @@
-pub fn bgk(
-    f: [f32; 27],
-    ux: f32,
-    uy: f32,
-    uz: f32,
-    density: f32,
-    omega: f32,
-) -> [f32; 27] {
-    let mut result = [0.0; 27];
-    let q0 = f[0];
-    let q1 = f[1];
-    let q2 = f[2];
-    let q3 = f[3];
-    let q4 = f[4];
-    let q5 = f[5];
-    let q6 = f[6];
-    let q7 = f[7];
-    let q8 = f[8];
-    let q9 = f[9];
-    let q10 = f[10];
-    let q11 = f[11];
-    let q12 = f[12];
-    let q13 = f[13];
-    let q14 = f[14];
-    let q15 = f[15];
-    let q16 = f[16];
-    let q17 = f[17];
-    let q18 = f[18];
-    let q19 = f[19];
-    let q20 = f[20];
-    let q21 = f[21];
-    let q22 = f[22];
-    let q23 = f[23];
-    let q24 = f[24];
-    let q25 = f[25];
-    let q26 = f[26];
+pub fn wgsl_bgk(omega: f32) -> String {
+    format!("
+fn bgk(index: i32) {{
+    let velocity = get_velocity(index);
+    let ux = velocity[0];
+    let uy = velocity[1];
+    let uz = velocity[2];
+    let density = densities[index];
+    let omega = {};
+    var result: array<f32, 27>;
+    let base = index * 27; 
+    let q0 = distributions[base + 0];
+    let q1 = distributions[base + 1];
+    let q2 = distributions[base + 2];
+    let q3 = distributions[base + 3];
+    let q4 = distributions[base + 4];
+    let q5 = distributions[base + 5];
+    let q6 = distributions[base + 6];
+    let q7 = distributions[base + 7];
+    let q8 = distributions[base + 8];
+    let q9 = distributions[base + 9];
+    let q10 = distributions[base + 10];
+    let q11 = distributions[base + 11];
+    let q12 = distributions[base + 12];
+    let q13 = distributions[base + 13];
+    let q14 = distributions[base + 14];
+    let q15 = distributions[base + 15];
+    let q16 = distributions[base + 16];
+    let q17 = distributions[base + 17];
+    let q18 = distributions[base + 18];
+    let q19 = distributions[base + 19];
+    let q20 = distributions[base + 20];
+    let q21 = distributions[base + 21];
+    let q22 = distributions[base + 22];
+    let q23 = distributions[base + 23];
+    let q24 = distributions[base + 24];
+    let q25 = distributions[base + 25];
+    let q26 = distributions[base + 26];
 result[0] = omega*(-0.296296296296296*density*(-1.5*ux * ux - 1.5*uy * uy - 1.5*uz * uz + 1.0) + q0) + q0;
 
 result[1] = omega*(-0.0740740740740741*density*(3.0*ux * ux + 3.0*ux - 1.5*uy * uy - 1.5*uz * uz + 1.0) + q1) + q1;
@@ -88,7 +90,7 @@ result[25] = omega*(-0.00462962962962963*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy
 
 result[26] = omega*(-0.00462962962962963*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz - 3.0*uz + 4.5*(-1.0*ux - 1.0*uy - 1.0*uz) * (-1.0*ux - 1.0*uy - 1.0*uz) + 1.0) + q26) + q26;
 
-  result
+    add_qi_to_distributions(index, result);
+}}
+", omega)
 }
-
-

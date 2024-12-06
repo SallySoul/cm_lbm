@@ -196,7 +196,7 @@ def f_eq(density, u):
 
 # Utility to create vector of component symbols for f
 def f():
-    return Matrix([[Symbol(f"f{i}")] for i in range(0, 27)])
+    return Matrix([[Symbol(f"q{i}")] for i in range(0, 27)])
 
 # Utility to create vector of component symbols for u
 def u():

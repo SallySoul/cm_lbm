@@ -577,6 +577,7 @@ fn apply_bounce_back(index: i32) {
     }
 
     pub fn add_collision_main(&mut self, workgroup_size: [u32; 3], omega: f32) {
+        self.buffer += &shader_ops::wgsl_bgk(omega);
         self.add_main_invocation_id_block(workgroup_size);
         self.buffer += "
   let index = coord_to_linear(x, y, z);
@@ -587,7 +588,7 @@ fn apply_bounce_back(index: i32) {
 
   // Collide
   if bb_flag[index] < 0 {
-    cm_mrt(index);
+    bgk(index);
   } 
 
   // Specular slip
