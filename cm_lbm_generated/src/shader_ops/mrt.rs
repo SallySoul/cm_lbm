@@ -1,39 +1,41 @@
-pub fn mrt(
-    f: [f32; 27],
-    ux: f32,
-    uy: f32,
-    uz: f32,
-    density: f32,
-    riv: f32,
-) -> [f32; 27] {
-    let mut result = [0.0; 27];
-    let q0 = f[0];
-    let q1 = f[1];
-    let q2 = f[2];
-    let q3 = f[3];
-    let q4 = f[4];
-    let q5 = f[5];
-    let q6 = f[6];
-    let q7 = f[7];
-    let q8 = f[8];
-    let q9 = f[9];
-    let q10 = f[10];
-    let q11 = f[11];
-    let q12 = f[12];
-    let q13 = f[13];
-    let q14 = f[14];
-    let q15 = f[15];
-    let q16 = f[16];
-    let q17 = f[17];
-    let q18 = f[18];
-    let q19 = f[19];
-    let q20 = f[20];
-    let q21 = f[21];
-    let q22 = f[22];
-    let q23 = f[23];
-    let q24 = f[24];
-    let q25 = f[25];
-    let q26 = f[26];
+pub fn wgsl_mrt(riv: f32) -> String {
+    format!("
+fn mrt(index: i32) {{
+    let velocity = get_velocity(index);
+    let ux = velocity[0];
+    let uy = velocity[1];
+    let uz = velocity[2];
+    let density = densities[index];
+    let riv = {};
+    var result: array<f32, 27>;
+    let base = index * 27; 
+    let q0 = distributions[base + 0];
+    let q1 = distributions[base + 1];
+    let q2 = distributions[base + 2];
+    let q3 = distributions[base + 3];
+    let q4 = distributions[base + 4];
+    let q5 = distributions[base + 5];
+    let q6 = distributions[base + 6];
+    let q7 = distributions[base + 7];
+    let q8 = distributions[base + 8];
+    let q9 = distributions[base + 9];
+    let q10 = distributions[base + 10];
+    let q11 = distributions[base + 11];
+    let q12 = distributions[base + 12];
+    let q13 = distributions[base + 13];
+    let q14 = distributions[base + 14];
+    let q15 = distributions[base + 15];
+    let q16 = distributions[base + 16];
+    let q17 = distributions[base + 17];
+    let q18 = distributions[base + 18];
+    let q19 = distributions[base + 19];
+    let q20 = distributions[base + 20];
+    let q21 = distributions[base + 21];
+    let q22 = distributions[base + 22];
+    let q23 = distributions[base + 23];
+    let q24 = distributions[base + 24];
+    let q25 = distributions[base + 25];
+    let q26 = distributions[base + 26];
 result[0] = 0.871800647655485*density*ux * ux + 5.55111512312578e-17*density*ux + 0.871800647655485*density*uy * uy + 5.55111512312578e-17*density*uy + 0.871800647655485*density*uz * uz + 5.55111512312578e-17*density*uz + 1.37183350925717*density + 1.0*q0 - 1.94174757281553*q1 - 1.96410934908596*q10 - 1.96410934908596*q11 - 1.96410934908596*q12 - 1.96410934908596*q13 - 1.96410934908596*q14 - 1.96410934908596*q15 - 1.96410934908596*q16 - 1.96410934908596*q17 - 1.96410934908596*q18 - 1.95387778164147*q19 - 1.94174757281553*q2 - 1.95387778164147*q20 - 1.95387778164147*q21 - 1.95387778164147*q22 - 1.95387778164147*q23 - 1.95387778164147*q24 - 1.95387778164147*q25 - 1.95387778164147*q26 - 1.94174757281553*q3 - 1.94174757281553*q4 - 1.94174757281553*q5 - 1.94174757281553*q6 - 1.96410934908596*q7 - 1.96410934908596*q8 - 1.96410934908596*q9;
 
 result[1] = -0.333333333333333*density*riv*ux * ux + 0.166666666666667*density*riv*uy * uy + 0.166666666666667*density*riv*uz * uz + 0.211348867110769*density*ux * ux + 0.541830679447893*density*ux - 0.108548765646749*density*uy * uy + 1.38777878078145e-17*density*uy - 0.108548765646749*density*uz * uz + 6.93889390390723e-18*density*uz - 0.145300107942581*density + 0.333333333333333*q1*riv + 1.32362459546926*q1 + 0.166666666666667*q10*riv + 0.658430079073725*q10 + 0.166666666666667*q11*riv - 1.28331749374181*q11 + 0.166666666666667*q12*riv - 1.28331749374181*q12 + 0.166666666666667*q13*riv + 0.658430079073725*q13 + 0.166666666666667*q14*riv + 0.658430079073725*q14 - 0.333333333333333*q15*riv + 0.647249190938511*q15 - 0.333333333333333*q16*riv + 0.647249190938511*q16 - 0.333333333333333*q17*riv + 0.647249190938511*q17 - 0.333333333333333*q18*riv + 0.647249190938511*q18 - 0.998096753122219*q19 + 0.333333333333333*q2*riv + 0.323624595469256*q2 - 0.998096753122219*q20 - 0.998096753122219*q21 + 0.98786518567773*q22 - 0.998096753122219*q23 + 0.98786518567773*q24 + 0.98786518567773*q25 + 0.98786518567773*q26 - 0.166666666666667*q3*riv + 0.323624595469256*q3 - 0.166666666666667*q4*riv + 0.323624595469256*q4 - 0.166666666666667*q5*riv + 0.323624595469256*q5 - 0.166666666666667*q6*riv + 0.323624595469256*q6 + 0.166666666666667*q7*riv - 1.28331749374181*q7 + 0.166666666666667*q8*riv - 1.28331749374181*q8 + 0.166666666666667*q9*riv + 0.658430079073725*q9;
@@ -88,7 +90,7 @@ result[25] = -0.0262054507337526*density*ux * ux + 0.0799744081893794*density*ux
 
 result[26] = -0.0262054507337526*density*ux * ux - 0.0799744081893794*density*ux*uy - 0.0799744081893794*density*ux*uz + 0.0263546278726544*density*ux - 0.0262054507337526*density*uy * uy - 0.0799744081893794*density*uy*uz + 0.0263546278726544*density*uy - 0.0262054507337526*density*uz * uz + 0.0263546278726544*density*uz - 0.00873515024458421*density + 0.00132533114457659*q19 + 0.00145262778368718*q20 + 0.00145262778368718*q21 + 0.00145262778368718*q22 - 0.00960096371241645*q23 - 0.00960096371241645*q24 - 0.00960096371241645*q25 + 2.9099121294718*q26;
 
-  result
+    add_qi_to_distributions(index, result);
+}}
+", riv)
 }
-
-

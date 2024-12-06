@@ -22,7 +22,7 @@ def rust_generate_op(op_expr):
     raw_buffer = ""
     i = 0
     for q in op_expr:
-        print(f"  rust_generate_op: Starting {i}")
+        print(f"  generate_op: Starting {i}")
         #s = simplify(q)
         source_buffer += f"result[{i}] = {q};\n\n"
         raw_buffer+= f"i: {i}, q: {q}\n\n"
@@ -34,19 +34,19 @@ def rust_generate_moment_op(op_expr):
     source_buffer = "" 
     raw_buffer = ""
 
-    print(f"  rust_generate_moment_op: 0")
+    print(f"  generate_moment_op: 0")
     source_buffer += f"let density = {op_expr[0]};\n\n"
     raw_buffer+= f"i: 0, q: {op_expr[0]}\n\n"
 
-    print(f"  rust_generate_moment_op: 1")
+    print(f"  generate_moment_op: 1")
     source_buffer += f"let ux = {op_expr[1]};\n\n"
     raw_buffer+= f"i: 1, q: {op_expr[1]}\n\n"
 
-    print(f"  rust_generate_moment_op: 2")
+    print(f"  generate_moment_op: 2")
     source_buffer += f"let uy = {op_expr[2]};\n\n"
     raw_buffer+= f"i: 2, q: {op_expr[2]}\n\n"
 
-    print(f"  rust_generate_moment_op: 3")
+    print(f"  generate_moment_op: 3")
     source_buffer += f"let uz = {op_expr[3]};\n\n"
     raw_buffer+= f"i: 3, q: {op_expr[3]}\n\n"
 
