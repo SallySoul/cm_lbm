@@ -6,7 +6,7 @@ from sympy.simplify.simplify import simplify
 
 def mrt_rust_header():
     return '''\
-pub fn cm_mrt(
+pub fn mrt(
     f: [f32; 27],
     ux: f32,
     uy: f32,
