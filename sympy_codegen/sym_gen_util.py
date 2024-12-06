@@ -8,12 +8,14 @@ def remove_exponent(source_buffer):
     # For now we only see power 2
     return re.sub(r'(u.|\([a-z*+\- \d\.]*\))\*\*2', r'\1 * \1', source_buffer)
 
-def write_results(name, source, raw, output_dir):
-    print(f"write result, name: {name}, output_dir: {output_dir}")
+def write_rust_ops(name, source, output_dir):
+    print(f"write rust_op, name: {name}, output_dir: {output_dir}")
     with open(f"{output_dir}/{name}.rs", 'w') as output:
         output.write(source)
+
+def write_ops_debug(name, debug, output_dir):
     with open(f"{output_dir}/{name}.txt", 'w') as output:
-        output.write(raw)
+        output.write(debug)
 
 def rust_generate_op(op_expr):
     source_buffer = "" 
