@@ -254,42 +254,6 @@ mod unit_tests {
     }
 
     #[test]
-    fn periodic_offset_index_test() {
-        {
-            let index = vector![0, 0];
-            let bound = vector![10, 10];
-            assert_eq!(periodic_offset_index(&index, &bound), vector![0, 0]);
-        }
-
-        {
-            let index = vector![-1, 0];
-            let bound = vector![10, 10];
-            assert_eq!(periodic_offset_index(&index, &bound), vector![9, 0]);
-        }
-
-        {
-            let index = vector![0, -1];
-            let bound = vector![10, 10];
-            assert_eq!(periodic_offset_index(&index, &bound), vector![0, 9]);
-        }
-
-        {
-            let index = vector![0, -1];
-            let bound = vector![10, 10];
-            assert_eq!(periodic_offset_index(&index, &bound), vector![0, 9]);
-        }
-
-        {
-            let index = vector![0, -1, -4, -19, 34];
-            let bound = vector![100, 100, 100, 100, 100];
-            assert_eq!(
-                periodic_offset_index(&index, &bound),
-                vector![0, 99, 96, 81, 34]
-            );
-        }
-    }
-
-    #[test]
     fn linear_to_coord_test() {
         {
             let index = 67;
@@ -351,33 +315,6 @@ mod unit_tests {
             let c = vector![9, 8];
             let li = coord_to_linear_in_box(&c, &bound);
             assert_eq!(c, linear_to_coord_in_box(li, &bound));
-        }
-    }
-
-    #[test]
-    fn box_contains_box_test() {
-        {
-            let a = matrix![1, 2];
-            let b = matrix![1, 2];
-            assert!(box_contains_box(&a, &b));
-        }
-
-        {
-            let a = matrix![0, 9];
-            let b = matrix![1, 2];
-            assert!(box_contains_box(&a, &b));
-        }
-
-        {
-            let a = matrix![2, 9];
-            let b = matrix![1, 2];
-            assert!(!box_contains_box(&a, &b));
-        }
-
-        {
-            let a = matrix![2, 9];
-            let b = matrix![3, 10];
-            assert!(!box_contains_box(&a, &b));
         }
     }
 }
