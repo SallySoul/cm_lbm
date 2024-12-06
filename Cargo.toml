@@ -1,6 +1,6 @@
 [workspace]
-
 members = [
     "cm_lbm",
     "cm_lbm_generated",
 ]
+resolver = "2"

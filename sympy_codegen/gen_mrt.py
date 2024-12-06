@@ -25,7 +25,7 @@ def mrt_rust_footer():
 
 def gen_mrt_ops(rust_src_dir, shader_src_dir, debug_dir):
     print("Generating cm_mrt")
-    name = "cm_mrt"
+    name = "mrt"
 
     u = cm_mrt.u()
     f = cm_mrt.f()

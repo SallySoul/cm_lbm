@@ -23,7 +23,7 @@ def eq_rust_footer():
 
 def gen_eq_ops(rust_src_dir, shader_src_dir, debug_dir):
     print("Generating eq_op")
-    name = "eq_op"
+    name = "eq"
 
     u = cm_mrt.u()
     density = Symbol("density")

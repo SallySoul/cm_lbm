@@ -9,8 +9,6 @@ mod solver;
 mod vtk;
 mod wgpu_util;
 
-pub mod op_test;
-
 pub use coord_util::*;
 pub use equil::*;
 pub use lattice::*;

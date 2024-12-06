@@ -188,6 +188,28 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fd16c4719339c4530435d38e511904438d07cce7950afa3718a84ac36c10e89e"
 
 [[package]]
+name = "cm_lbm"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "cm_lbm_generated",
+ "float-cmp",
+ "nalgebra",
+ "num",
+ "num-traits",
+ "rand",
+ "simple_logger",
+ "time",
+ "tokio",
+ "vtkio",
+ "wgpu",
+]
+
+[[package]]
+name = "cm_lbm_generated"
+version = "0.1.0"
+
+[[package]]
 name = "codespan-reporting"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -547,23 +569,6 @@ name = "lazy_static"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
-
-[[package]]
-name = "lbm3"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "float-cmp",
- "nalgebra",
- "num",
- "num-traits",
- "rand",
- "simple_logger",
- "time",
- "tokio",
- "vtkio",
- "wgpu",
-]
 
 [[package]]
 name = "libc"

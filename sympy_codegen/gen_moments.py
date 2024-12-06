@@ -17,7 +17,7 @@ def moments_op_footer():
 
 def gen_moments_ops(rust_src_dir, shader_src_dir, debug_dir):
     print("Generating moments_op")
-    name = "moments_op"
+    name = "moments"
 
     f = cm_mrt.f()
     moment_op = cm_mrt.M(Matrix([[0.0], [0.0], [0.0]])) * f
