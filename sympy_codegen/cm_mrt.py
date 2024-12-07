@@ -169,7 +169,7 @@ def moment_relaxation_rate(v):
 # Precompute value for r4 - r9, pass in as riv
 # r9 is unclear, could be in either set from what I can find?
 def relaxation_rates(riv):
-    r0r8 = [0, 0, 0, 0, riv, riv, riv, riv, riv]
+    r0r8 = [0, 2, 2, 2, riv, riv, riv, riv, riv]
     r9r16 = [moment_relaxation_rate(0.005) for i in range(0,8)]
     r17r22 = [moment_relaxation_rate(0.007) for i in range(0, 6)]
     r23r25 = [moment_relaxation_rate(0.009) for i in range(0,3)]
