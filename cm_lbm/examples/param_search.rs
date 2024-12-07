@@ -9,7 +9,7 @@ async fn main() {
 
     println!("Start Param Search");
     let omega = 1.85;
-    let velocity = 0.1;
+    let velocity = 0.2;
     let density = 1.0;
     let riv = 1.85;
 
@@ -18,8 +18,8 @@ async fn main() {
     let ic_velocity = vector![0.0, 0.0, velocity];
     let bc_density = density;
     let bc_velocity = vector![0.0, 0.0, velocity];
-    let n_it = 10000;
-    let n_out = 400;
+    let n_it = 4000;
+    let n_out = 4000;
 
     let driver = setup_wgpu().await;
     //let bounce_back = BounceBack::empty(&driver.device, &grid_dimensions);
