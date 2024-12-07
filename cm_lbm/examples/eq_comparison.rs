@@ -20,7 +20,7 @@ fn main() {
     println!("0, f32 - {} - {:?} -- {:?}", da, m, f);
     println!("0, f64 + {} - {:?} -- {:?}", da_f64, m_f64, f_f64);
 
-    for i in 0..20 {
+    for i in 0..200 {
         f = cm_mrt(f, m.1[0], m.1[1], m.1[2], m.0, 0.6);
         m = moments(f);
         da = abs_density(f);
