@@ -185,9 +185,9 @@ def MBar(density):
     r = [0 for i in range(0, 27)]
     r[0] = density
     r[9] = density
-    r[17] = 3.0 * density
-    r[18] = 9.0 * density
-    r[26] = 27.0 * density
+    r[17] = density / 3.0;
+    r[18] = density / 9.0;
+    r[26] = density / 27.0
     return Matrix([[i] for i in r])
 
 def f_eq(density, u):
