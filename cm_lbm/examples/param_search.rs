@@ -8,20 +8,19 @@ async fn main() {
     std::fs::create_dir(output_dir).unwrap();
 
     println!("Start Param Search");
-    let velocity = 0.2;
+    let velocity = 0.15;
     let density = 1.0;
-    let riv = 1.95;
+    let riv = 1.9;
 
-    let grid_dimensions = matrix![0, 60; 0, 60; 0, 100];
+    let grid_dimensions = matrix![0, 80; 0, 80; 0, 185];
     let ic_density = density;
     let ic_velocity = vector![0.0, 0.0, velocity];
     let bc_density = density;
     let bc_velocity = vector![0.0, 0.0, velocity];
-    let n_it = 100000;
-    let n_out = 500;
+    let n_it = 200000;
+    let n_out = 10;
 
     let driver = setup_wgpu().await;
-    //let bounce_back = BounceBack::empty(&driver.device, &grid_dimensions);
 
     let world_coords = WorldCoords::new(vector![-40.0, -40.0, -40.0], 1.0);
     let spheres = vec![
@@ -36,22 +35,6 @@ async fn main() {
         &world_coords,
         Some(&format!("{}/bounce_back.vtu", output_dir)),
     );
-
-    /*
-    let world_coords = WorldCoords::new(vector![-40.0, -40.0, -40.0], 1.0);
-    let spheres = vec![
-        (vector![12.0, 12.0, 5.0], 10.0),
-        (vector![-12.0, -12.0, -10.0], 10.0),
-    ];
-
-    let bounce_back = BounceBack::new_spheres(
-        &driver.device,
-        &spheres,
-        &grid_dimensions,
-        &world_coords,
-        Some(&format!("{}/bounce_back.vtu", output_dir)),
-    );
-    */
 
     let ic_params =
         BCParamsUniform::new(&driver.device, ic_velocity, bc_density);
@@ -78,7 +61,6 @@ async fn main() {
         run_submission(&driver, |encoder| {
             solver.moments(encoder);
             solver.apply_dirichlet(encoder);
-            //solver.apply_slip_surfaces(encoder);
             solver.apply_collision(encoder);
             solver.apply_dirichlet(encoder);
         });
