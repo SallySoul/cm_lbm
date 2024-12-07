@@ -9,6 +9,11 @@ def moments_rust_header():
 pub fn moments(f: [f32; 27]) -> (f32, [f32;3]) {
 '''
 
+def moments_rust_f64_header():
+    return '''\
+pub fn moments_f64(f: [f64; 27]) -> (f64, [f64;3]) {
+'''
+
 def moments_rust_footer():
     return '''\
     (density, [ux/density, uy/density, uz/density]) 
@@ -46,6 +51,13 @@ def gen_moments_ops(rust_src_dir, shader_src_dir, debug_dir):
     rust_source += source_body
     rust_source += moments_rust_footer()
     util.write_rust_ops(name, rust_source, rust_src_dir)
+
+    f64_rust_source = moments_rust_f64_header()
+    f64_rust_source += util.rust_fi_def()
+    f64_rust_source += source_body
+    f64_rust_source += moments_rust_footer()
+    f64_name = f"{name}_f64"
+    util.write_rust_ops(f64_name, f64_rust_source, rust_src_dir)
 
     shader_source = moments_shader_header()
     shader_source += util.shader_fi_def()

@@ -1,4 +1,4 @@
-pub fn moments(f: [f32; 27]) -> (f32, [f32; 3]) {
+pub fn moments_f64(f: [f64; 27]) -> (f64, [f64; 3]) {
     let q0 = f[0];
     let q1 = f[1];
     let q2 = f[2];

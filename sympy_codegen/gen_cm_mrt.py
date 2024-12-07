@@ -17,6 +17,19 @@ pub fn cm_mrt(
     let mut result = [0.0; 27];
 '''
 
+def cm_mrt_rust_f64_header():
+    return '''\
+pub fn cm_mrt_f64(
+    f: [f64; 27],
+    ux: f64,
+    uy: f64,
+    uz: f64,
+    density: f64,
+    riv: f64,
+) -> [f64; 27] {
+    let mut result = [0.0; 27];
+'''
+
 def cm_mrt_rust_footer():
     return '''\
   result
@@ -68,6 +81,13 @@ def gen_cm_mrt_ops(rust_src_dir, shader_src_dir, debug_dir):
     rust_source += source_body
     rust_source += cm_mrt_rust_footer()
     util.write_rust_ops(name, rust_source, rust_src_dir)
+
+    f64_rust_source = cm_mrt_rust_f64_header()
+    f64_rust_source += util.rust_fi_def()
+    f64_rust_source += source_body
+    f64_rust_source += cm_mrt_rust_footer()
+    f64_name = f"{name}_f64"
+    util.write_rust_ops(f64_name, f64_rust_source, rust_src_dir)
 
     shader_source = cm_mrt_shader_header()
     shader_source += util.shader_fi_def()

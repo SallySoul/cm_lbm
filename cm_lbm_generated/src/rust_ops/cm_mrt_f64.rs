@@ -1,11 +1,11 @@
-pub fn cm_mrt(
-    f: [f32; 27],
-    ux: f32,
-    uy: f32,
-    uz: f32,
-    density: f32,
-    riv: f32,
-) -> [f32; 27] {
+pub fn cm_mrt_f64(
+    f: [f64; 27],
+    ux: f64,
+    uy: f64,
+    uz: f64,
+    density: f64,
+    riv: f64,
+) -> [f64; 27] {
     let mut result = [0.0; 27];
     let q0 = f[0];
     let q1 = f[1];

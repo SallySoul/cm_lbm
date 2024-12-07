@@ -15,6 +15,17 @@ pub fn eq(
     let mut result = [0.0; 27];
 '''
 
+def eq_rust_f64_header():
+    return '''\
+pub fn eq_f64(
+    ux: f64,
+    uy: f64,
+    uz: f64,
+    density: f64,
+) -> [f64; 27] {
+    let mut result = [0.0; 27];
+'''
+
 def eq_rust_footer():
     return '''\
   result
@@ -56,6 +67,12 @@ def gen_eq_ops(rust_src_dir, shader_src_dir, debug_dir):
     rust_source += source_body
     rust_source += eq_rust_footer()
     util.write_rust_ops(name, rust_source, rust_src_dir)
+
+    f64_rust_source = eq_rust_f64_header()
+    f64_rust_source += source_body
+    f64_rust_source += eq_rust_footer()
+    f64_name = f"{name}_f64"
+    util.write_rust_ops(f64_name, f64_rust_source, rust_src_dir)
 
     shader_source = eq_shader_header()
     shader_source += source_body

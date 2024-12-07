@@ -1,4 +1,4 @@
-pub fn eq(ux: f32, uy: f32, uz: f32, density: f32) -> [f32; 27] {
+pub fn eq_f64(ux: f64, uy: f64, uz: f64, density: f64) -> [f64; 27] {
     let mut result = [0.0; 27];
     result[0] = density
         * (-0.444444444444444 * ux * ux
