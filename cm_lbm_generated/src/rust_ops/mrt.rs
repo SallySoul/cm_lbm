@@ -34,11 +34,11 @@ pub fn mrt(
     let q24 = f[24];
     let q25 = f[25];
     let q26 = f[26];
-    result[0] = 0.871800647655485 * density * ux * ux
-        + 0.871800647655485 * density * uy * uy
-        + 0.871800647655484 * density * uz * uz
+    result[0] = 1.74360129531097 * density * ux * ux
+        + 1.74360129531097 * density * uy * uy
+        + 1.74360129531097 * density * uz * uz
         + 1.37183350925717 * density
-        + 1.0 * q0
+        + q0
         - 1.94174757281553 * q1
         - 1.96410934908596 * q10
         - 1.96410934908596 * q11
@@ -66,16 +66,13 @@ pub fn mrt(
         - 1.96410934908596 * q8
         - 1.96410934908596 * q9;
 
-    result[1] = -0.333333333333333 * density * riv * ux * ux
-        + 0.166666666666667 * density * riv * uy * uy
-        + 0.166666666666667 * density * riv * uz * uz
-        + 0.211348867110769 * density * ux * ux
-        + 1.03769553851859e-17 * density * ux * uy
-        + 1.2413053343725e-18 * density * ux * uz
+    result[1] = -0.666666666666667 * density * riv * ux * ux
+        + 0.333333333333333 * density * riv * uy * uy
+        + 0.333333333333333 * density * riv * uz * uz
+        + 0.422697734221538 * density * ux * ux
         - 0.458169320552106 * density * ux
-        - 0.108548765646749 * density * uy * uy
-        + 1.2413053343725e-18 * density * uy * uz
-        - 0.108548765646749 * density * uz * uz
+        - 0.217097531293497 * density * uy * uy
+        - 0.217097531293497 * density * uz * uz
         - 0.145300107942581 * density
         + 0.333333333333333 * q1 * riv
         + 2.32362459546926 * q1
@@ -122,16 +119,13 @@ pub fn mrt(
         + 0.166666666666667 * q9 * riv
         - 0.341569920926274 * q9;
 
-    result[2] = -0.333333333333333 * density * riv * ux * ux
-        + 0.166666666666667 * density * riv * uy * uy
-        + 0.166666666666667 * density * riv * uz * uz
-        + 0.211348867110769 * density * ux * ux
-        - 4.28652201797698e-18 * density * ux * uy
-        - 4.28652201797698e-18 * density * ux * uz
+    result[2] = -0.666666666666667 * density * riv * ux * ux
+        + 0.333333333333333 * density * riv * uy * uy
+        + 0.333333333333333 * density * riv * uz * uz
+        + 0.422697734221538 * density * ux * ux
         + 0.458169320552106 * density * ux
-        - 0.108548765646749 * density * uy * uy
-        + 1.40026385920581e-17 * density * uy * uz
-        - 0.108548765646749 * density * uz * uz
+        - 0.217097531293497 * density * uy * uy
+        - 0.217097531293497 * density * uz * uz
         - 0.145300107942581 * density
         + 0.333333333333333 * q1 * riv
         - 0.676375404530744 * q1
@@ -178,16 +172,13 @@ pub fn mrt(
         + 0.166666666666667 * q9 * riv
         - 0.283317493741808 * q9;
 
-    result[3] = 0.166666666666667 * density * riv * ux * ux
-        - 0.333333333333333 * density * riv * uy * uy
-        + 0.166666666666667 * density * riv * uz * uz
-        - 0.108548765646749 * density * ux * ux
-        + 1.03769553851859e-17 * density * ux * uy
-        + 1.2413053343725e-18 * density * ux * uz
-        + 0.211348867110769 * density * uy * uy
-        + 1.2413053343725e-18 * density * uy * uz
+    result[3] = 0.333333333333333 * density * riv * ux * ux
+        - 0.666666666666667 * density * riv * uy * uy
+        + 0.333333333333333 * density * riv * uz * uz
+        - 0.217097531293497 * density * ux * ux
+        + 0.422697734221538 * density * uy * uy
         - 0.458169320552106 * density * uy
-        - 0.108548765646749 * density * uz * uz
+        - 0.217097531293497 * density * uz * uz
         - 0.145300107942581 * density
         - 0.166666666666667 * q1 * riv
         + 0.323624595469256 * q1
@@ -234,16 +225,13 @@ pub fn mrt(
         + 0.166666666666667 * q9 * riv
         - 0.283317493741808 * q9;
 
-    result[4] = 0.166666666666667 * density * riv * ux * ux
-        - 0.333333333333333 * density * riv * uy * uy
-        + 0.166666666666667 * density * riv * uz * uz
-        - 0.108548765646749 * density * ux * ux
-        - 4.28652201797698e-18 * density * ux * uy
-        + 1.40026385920581e-17 * density * ux * uz
-        + 0.211348867110769 * density * uy * uy
-        - 4.28652201797698e-18 * density * uy * uz
+    result[4] = 0.333333333333333 * density * riv * ux * ux
+        - 0.666666666666667 * density * riv * uy * uy
+        + 0.333333333333333 * density * riv * uz * uz
+        - 0.217097531293497 * density * ux * ux
+        + 0.422697734221538 * density * uy * uy
         + 0.458169320552106 * density * uy
-        - 0.108548765646749 * density * uz * uz
+        - 0.217097531293497 * density * uz * uz
         - 0.145300107942581 * density
         - 0.166666666666667 * q1 * riv
         + 0.323624595469256 * q1
@@ -290,15 +278,12 @@ pub fn mrt(
         + 0.166666666666667 * q9 * riv
         - 0.341569920926274 * q9;
 
-    result[5] = 0.166666666666667 * density * riv * ux * ux
-        + 0.166666666666667 * density * riv * uy * uy
-        - 0.333333333333333 * density * riv * uz * uz
-        - 0.108548765646749 * density * ux * ux
-        + 1.2413053343725e-18 * density * ux * uy
-        + 1.23237508016838e-18 * density * ux * uz
-        - 0.108548765646749 * density * uy * uy
-        + 1.2413053343725e-18 * density * uy * uz
-        + 0.211348867110769 * density * uz * uz
+    result[5] = 0.333333333333333 * density * riv * ux * ux
+        + 0.333333333333333 * density * riv * uy * uy
+        - 0.666666666666667 * density * riv * uz * uz
+        - 0.217097531293497 * density * ux * ux
+        - 0.217097531293497 * density * uy * uy
+        + 0.422697734221538 * density * uz * uz
         - 0.458169320552106 * density * uz
         - 0.145300107942581 * density
         - 0.166666666666667 * q1 * riv
@@ -346,15 +331,12 @@ pub fn mrt(
         - 0.333333333333333 * q9 * riv
         + 0.647249190938511 * q9;
 
-    result[6] = 0.166666666666667 * density * riv * ux * ux
-        + 0.166666666666667 * density * riv * uy * uy
-        - 0.333333333333333 * density * riv * uz * uz
-        - 0.108548765646749 * density * ux * ux
-        - 4.28652201797698e-18 * density * ux * uy
-        - 4.28652201797698e-18 * density * ux * uz
-        - 0.108548765646749 * density * uy * uy
-        - 4.28652201797698e-18 * density * uy * uz
-        + 0.211348867110769 * density * uz * uz
+    result[6] = 0.333333333333333 * density * riv * ux * ux
+        + 0.333333333333333 * density * riv * uy * uy
+        - 0.666666666666667 * density * riv * uz * uz
+        - 0.217097531293497 * density * ux * ux
+        - 0.217097531293497 * density * uy * uy
+        + 0.422697734221538 * density * uz * uz
         + 0.458169320552106 * density * uz
         - 0.145300107942581 * density
         - 0.166666666666667 * q1 * riv
@@ -402,16 +384,13 @@ pub fn mrt(
         - 0.333333333333333 * q9 * riv
         + 0.647249190938511 * q9;
 
-    result[7] = 1.54314792647171e-17 * density * riv * ux * ux
-        - 0.25 * density * riv * ux * uy
-        + 1.54314792647171e-17 * density * riv * uy * uy
-        - 1.71460880719079e-18 * density * riv * uz * uz
-        - 0.107537914911254 * density * ux * ux
-        + 0.159948816378759 * density * ux * uy
+    result[7] = -0.5 * density * riv * ux * uy
+        - 0.215075829822507 * density * ux * ux
+        + 0.319897632757518 * density * ux * uy
         - 0.109103041989319 * density * ux
-        - 0.107537914911254 * density * uy * uy
+        - 0.215075829822507 * density * uy * uy
         - 0.109103041989319 * density * uy
-        + 0.0524109014675052 * density * uz * uz
+        + 0.10482180293501 * density * uz * uz
         - 0.0358459716370845 * density
         + 0.25 * q10 * riv
         - 0.491027337271491 * q10
@@ -438,17 +417,13 @@ pub fn mrt(
         - 0.25 * q9 * riv
         + 0.479846449136276 * q9;
 
-    result[8] = 1.54314792647171e-17 * density * riv * ux * ux
-        + 0.25 * density * riv * ux * uy
-        + 1.54314792647171e-17 * density * riv * uy * uy
-        - 1.71460880719079e-18 * density * riv * uz * uz
-        - 0.107537914911254 * density * ux * ux
-        - 0.159948816378759 * density * ux * uy
+    result[8] = 0.5 * density * riv * ux * uy
+        - 0.215075829822507 * density * ux * ux
+        - 0.319897632757518 * density * ux * uy
         - 0.109103041989319 * density * ux
-        - 0.107537914911254 * density * uy * uy
-        + 3.42921761438158e-18 * density * uy * uz
+        - 0.215075829822507 * density * uy * uy
         + 0.109103041989319 * density * uy
-        + 0.0524109014675052 * density * uz * uz
+        + 0.10482180293501 * density * uz * uz
         - 0.0358459716370845 * density
         - 0.25 * q10 * riv
         + 0.479846449136276 * q10
@@ -475,17 +450,13 @@ pub fn mrt(
         + 0.25 * q9 * riv
         - 0.491027337271491 * q9;
 
-    result[9] = 1.54314792647171e-17 * density * riv * ux * ux
-        + 0.25 * density * riv * ux * uy
-        + 1.54314792647171e-17 * density * riv * uy * uy
-        - 1.71460880719079e-18 * density * riv * uz * uz
-        - 0.107537914911254 * density * ux * ux
-        - 0.159948816378759 * density * ux * uy
-        + 3.42921761438158e-18 * density * ux * uz
+    result[9] = 0.5 * density * riv * ux * uy
+        - 0.215075829822507 * density * ux * ux
+        - 0.319897632757518 * density * ux * uy
         + 0.109103041989319 * density * ux
-        - 0.107537914911254 * density * uy * uy
+        - 0.215075829822507 * density * uy * uy
         - 0.109103041989319 * density * uy
-        + 0.0524109014675052 * density * uz * uz
+        + 0.10482180293501 * density * uz * uz
         - 0.0358459716370845 * density
         - 0.25 * q10 * riv
         + 0.479846449136276 * q10
@@ -512,16 +483,13 @@ pub fn mrt(
         + 0.25 * q9 * riv
         + 2.45072023554404 * q9;
 
-    result[10] = 1.54314792647171e-17 * density * riv * ux * ux
-        - 0.25 * density * riv * ux * uy
-        + 1.54314792647171e-17 * density * riv * uy * uy
-        - 1.71460880719079e-18 * density * riv * uz * uz
-        - 0.107537914911254 * density * ux * ux
-        + 0.159948816378759 * density * ux * uy
+    result[10] = -0.5 * density * riv * ux * uy
+        - 0.215075829822507 * density * ux * ux
+        + 0.319897632757518 * density * ux * uy
         + 0.109103041989319 * density * ux
-        - 0.107537914911254 * density * uy * uy
+        - 0.215075829822507 * density * uy * uy
         + 0.109103041989319 * density * uy
-        + 0.0524109014675052 * density * uz * uz
+        + 0.10482180293501 * density * uz * uz
         - 0.0358459716370845 * density
         + 0.25 * q10 * riv
         + 2.45072023554404 * q10
@@ -548,15 +516,12 @@ pub fn mrt(
         - 0.25 * q9 * riv
         + 0.479846449136276 * q9;
 
-    result[11] = 1.54314792647171e-17 * density * riv * ux * ux
-        - 0.25 * density * riv * ux * uz
-        - 1.71460880719079e-18 * density * riv * uy * uy
-        + 1.54314792647171e-17 * density * riv * uz * uz
-        - 0.107537914911254 * density * ux * ux
-        + 0.159948816378759 * density * ux * uz
+    result[11] = -0.5 * density * riv * ux * uz
+        - 0.215075829822507 * density * ux * ux
+        + 0.319897632757518 * density * ux * uz
         - 0.109103041989319 * density * ux
-        + 0.0524109014675052 * density * uy * uy
-        - 0.107537914911254 * density * uz * uz
+        + 0.10482180293501 * density * uy * uy
+        - 0.215075829822507 * density * uz * uz
         - 0.109103041989319 * density * uz
         - 0.0358459716370845 * density
         + 0.25 * q11 * riv
@@ -584,16 +549,12 @@ pub fn mrt(
         + 0.25 * q26 * riv
         - 0.493805296199754 * q26;
 
-    result[12] = 1.54314792647171e-17 * density * riv * ux * ux
-        + 0.25 * density * riv * ux * uz
-        - 1.71460880719079e-18 * density * riv * uy * uy
-        + 1.54314792647171e-17 * density * riv * uz * uz
-        - 0.107537914911254 * density * ux * ux
-        - 0.159948816378759 * density * ux * uz
+    result[12] = 0.5 * density * riv * ux * uz
+        - 0.215075829822507 * density * ux * ux
+        - 0.319897632757518 * density * ux * uz
         - 0.109103041989319 * density * ux
-        + 0.0524109014675052 * density * uy * uy
-        + 3.42921761438158e-18 * density * uy * uz
-        - 0.107537914911254 * density * uz * uz
+        + 0.10482180293501 * density * uy * uy
+        - 0.215075829822507 * density * uz * uz
         + 0.109103041989319 * density * uz
         - 0.0358459716370845 * density
         - 0.25 * q11 * riv
@@ -621,16 +582,12 @@ pub fn mrt(
         - 0.25 * q26 * riv
         + 0.487994785065006 * q26;
 
-    result[13] = 1.54314792647171e-17 * density * riv * ux * ux
-        + 0.25 * density * riv * ux * uz
-        - 1.71460880719079e-18 * density * riv * uy * uy
-        + 1.54314792647171e-17 * density * riv * uz * uz
-        - 0.107537914911254 * density * ux * ux
-        + 3.42921761438158e-18 * density * ux * uy
-        - 0.159948816378759 * density * ux * uz
+    result[13] = 0.5 * density * riv * ux * uz
+        - 0.215075829822507 * density * ux * ux
+        - 0.319897632757518 * density * ux * uz
         + 0.109103041989319 * density * ux
-        + 0.0524109014675052 * density * uy * uy
-        - 0.107537914911254 * density * uz * uz
+        + 0.10482180293501 * density * uy * uy
+        - 0.215075829822507 * density * uz * uz
         - 0.109103041989319 * density * uz
         - 0.0358459716370845 * density
         - 0.25 * q11 * riv
@@ -658,15 +615,12 @@ pub fn mrt(
         - 0.25 * q26 * riv
         + 0.487994785065006 * q26;
 
-    result[14] = 1.54314792647171e-17 * density * riv * ux * ux
-        - 0.25 * density * riv * ux * uz
-        - 1.71460880719079e-18 * density * riv * uy * uy
-        + 1.54314792647171e-17 * density * riv * uz * uz
-        - 0.107537914911254 * density * ux * ux
-        + 0.159948816378759 * density * ux * uz
+    result[14] = -0.5 * density * riv * ux * uz
+        - 0.215075829822507 * density * ux * ux
+        + 0.319897632757518 * density * ux * uz
         + 0.109103041989319 * density * ux
-        + 0.0524109014675052 * density * uy * uy
-        - 0.107537914911254 * density * uz * uz
+        + 0.10482180293501 * density * uy * uy
+        - 0.215075829822507 * density * uz * uz
         + 0.109103041989319 * density * uz
         - 0.0358459716370845 * density
         + 0.25 * q11 * riv
@@ -694,15 +648,12 @@ pub fn mrt(
         + 0.25 * q26 * riv
         - 0.44959093021534 * q26;
 
-    result[15] = -1.71460880719079e-18 * density * riv * ux * ux
-        + 1.54314792647171e-17 * density * riv * uy * uy
-        - 0.25 * density * riv * uy * uz
-        + 1.54314792647171e-17 * density * riv * uz * uz
-        + 0.0524109014675052 * density * ux * ux
-        - 0.107537914911254 * density * uy * uy
-        + 0.159948816378759 * density * uy * uz
+    result[15] = -0.5 * density * riv * uy * uz
+        + 0.10482180293501 * density * ux * ux
+        - 0.215075829822507 * density * uy * uy
+        + 0.319897632757518 * density * uy * uz
         - 0.109103041989319 * density * uy
-        - 0.107537914911254 * density * uz * uz
+        - 0.215075829822507 * density * uz * uz
         - 0.109103041989319 * density * uz
         - 0.0358459716370845 * density
         + 0.25 * q15 * riv
@@ -730,16 +681,12 @@ pub fn mrt(
         + 0.25 * q26 * riv
         - 0.493805296199754 * q26;
 
-    result[16] = -1.71460880719079e-18 * density * riv * ux * ux
-        + 1.54314792647171e-17 * density * riv * uy * uy
-        + 0.25 * density * riv * uy * uz
-        + 1.54314792647171e-17 * density * riv * uz * uz
-        + 0.0524109014675052 * density * ux * ux
-        + 3.42921761438158e-18 * density * ux * uz
-        - 0.107537914911254 * density * uy * uy
-        - 0.159948816378759 * density * uy * uz
+    result[16] = 0.5 * density * riv * uy * uz
+        + 0.10482180293501 * density * ux * ux
+        - 0.215075829822507 * density * uy * uy
+        - 0.319897632757518 * density * uy * uz
         - 0.109103041989319 * density * uy
-        - 0.107537914911254 * density * uz * uz
+        - 0.215075829822507 * density * uz * uz
         + 0.109103041989319 * density * uz
         - 0.0358459716370845 * density
         - 0.25 * q15 * riv
@@ -767,16 +714,12 @@ pub fn mrt(
         - 0.25 * q26 * riv
         + 0.487994785065006 * q26;
 
-    result[17] = -1.71460880719079e-18 * density * riv * ux * ux
-        + 1.54314792647171e-17 * density * riv * uy * uy
-        + 0.25 * density * riv * uy * uz
-        + 1.54314792647171e-17 * density * riv * uz * uz
-        + 0.0524109014675052 * density * ux * ux
-        + 3.42921761438158e-18 * density * ux * uy
-        - 0.107537914911254 * density * uy * uy
-        - 0.159948816378759 * density * uy * uz
+    result[17] = 0.5 * density * riv * uy * uz
+        + 0.10482180293501 * density * ux * ux
+        - 0.215075829822507 * density * uy * uy
+        - 0.319897632757518 * density * uy * uz
         + 0.109103041989319 * density * uy
-        - 0.107537914911254 * density * uz * uz
+        - 0.215075829822507 * density * uz * uz
         - 0.109103041989319 * density * uz
         - 0.0358459716370845 * density
         - 0.25 * q15 * riv
@@ -804,15 +747,12 @@ pub fn mrt(
         - 0.25 * q26 * riv
         + 0.487994785065006 * q26;
 
-    result[18] = -1.71460880719079e-18 * density * riv * ux * ux
-        + 1.54314792647171e-17 * density * riv * uy * uy
-        - 0.25 * density * riv * uy * uz
-        + 1.54314792647171e-17 * density * riv * uz * uz
-        + 0.0524109014675052 * density * ux * ux
-        - 0.107537914911254 * density * uy * uy
-        + 0.159948816378759 * density * uy * uz
+    result[18] = -0.5 * density * riv * uy * uz
+        + 0.10482180293501 * density * ux * ux
+        - 0.215075829822507 * density * uy * uy
+        + 0.319897632757518 * density * uy * uz
         + 0.109103041989319 * density * uy
-        - 0.107537914911254 * density * uz * uz
+        - 0.215075829822507 * density * uz * uz
         + 0.109103041989319 * density * uz
         - 0.0358459716370845 * density
         + 0.25 * q15 * riv
@@ -840,14 +780,14 @@ pub fn mrt(
         + 0.25 * q26 * riv
         - 0.44959093021534 * q26;
 
-    result[19] = -0.0262054507337526 * density * ux * ux
-        - 0.0799744081893794 * density * ux * uy
-        - 0.0799744081893794 * density * ux * uz
+    result[19] = -0.0524109014675052 * density * ux * ux
+        - 0.159948816378759 * density * ux * uy
+        - 0.159948816378759 * density * ux * uz
         - 0.0263546278726544 * density * ux
-        - 0.0262054507337526 * density * uy * uy
-        - 0.0799744081893794 * density * uy * uz
+        - 0.0524109014675052 * density * uy * uy
+        - 0.159948816378759 * density * uy * uz
         - 0.0263546278726544 * density * uy
-        - 0.0262054507337526 * density * uz * uz
+        - 0.0524109014675052 * density * uz * uz
         - 0.0263546278726544 * density * uz
         - 0.00873515024458421 * density
         + 2.9099121294718 * q19
@@ -859,14 +799,14 @@ pub fn mrt(
         + 0.00145262778368719 * q25
         + 0.0013253311445766 * q26;
 
-    result[20] = -0.0262054507337526 * density * ux * ux
-        - 0.0799744081893794 * density * ux * uy
-        + 0.0799744081893794 * density * ux * uz
+    result[20] = -0.0524109014675052 * density * ux * ux
+        - 0.159948816378759 * density * ux * uy
+        + 0.159948816378759 * density * ux * uz
         - 0.0263546278726544 * density * ux
-        - 0.0262054507337526 * density * uy * uy
-        + 0.0799744081893794 * density * uy * uz
+        - 0.0524109014675052 * density * uy * uy
+        + 0.159948816378759 * density * uy * uz
         - 0.0263546278726544 * density * uy
-        - 0.0262054507337526 * density * uz * uz
+        - 0.0524109014675052 * density * uz * uz
         + 0.0263546278726544 * density * uz
         - 0.00873515024458421 * density
         - 0.00960096371241642 * q19
@@ -878,14 +818,14 @@ pub fn mrt(
         - 0.00960096371241642 * q25
         + 0.00145262778368719 * q26;
 
-    result[21] = -0.0262054507337526 * density * ux * ux
-        + 0.0799744081893794 * density * ux * uy
-        - 0.0799744081893794 * density * ux * uz
+    result[21] = -0.0524109014675052 * density * ux * ux
+        + 0.159948816378759 * density * ux * uy
+        - 0.159948816378759 * density * ux * uz
         - 0.0263546278726544 * density * ux
-        - 0.0262054507337526 * density * uy * uy
-        + 0.0799744081893794 * density * uy * uz
+        - 0.0524109014675052 * density * uy * uy
+        + 0.159948816378759 * density * uy * uz
         + 0.0263546278726544 * density * uy
-        - 0.0262054507337526 * density * uz * uz
+        - 0.0524109014675052 * density * uz * uz
         - 0.0263546278726544 * density * uz
         - 0.00873515024458421 * density
         - 0.00960096371241642 * q19
@@ -897,14 +837,14 @@ pub fn mrt(
         + 0.0013253311445766 * q25
         + 0.00145262778368719 * q26;
 
-    result[22] = -0.0262054507337526 * density * ux * ux
-        + 0.0799744081893794 * density * ux * uy
-        + 0.0799744081893794 * density * ux * uz
+    result[22] = -0.0524109014675052 * density * ux * ux
+        + 0.159948816378759 * density * ux * uy
+        + 0.159948816378759 * density * ux * uz
         + 0.0263546278726544 * density * ux
-        - 0.0262054507337526 * density * uy * uy
-        - 0.0799744081893794 * density * uy * uz
+        - 0.0524109014675052 * density * uy * uy
+        - 0.159948816378759 * density * uy * uz
         - 0.0263546278726544 * density * uy
-        - 0.0262054507337526 * density * uz * uz
+        - 0.0524109014675052 * density * uz * uz
         - 0.0263546278726544 * density * uz
         - 0.00873515024458421 * density
         - 0.00960096371241642 * q19
@@ -916,14 +856,14 @@ pub fn mrt(
         - 0.00960096371241642 * q25
         + 0.00145262778368719 * q26;
 
-    result[23] = -0.0262054507337526 * density * ux * ux
-        + 0.0799744081893794 * density * ux * uy
-        + 0.0799744081893794 * density * ux * uz
+    result[23] = -0.0524109014675052 * density * ux * ux
+        + 0.159948816378759 * density * ux * uy
+        + 0.159948816378759 * density * ux * uz
         - 0.0263546278726544 * density * ux
-        - 0.0262054507337526 * density * uy * uy
-        - 0.0799744081893794 * density * uy * uz
+        - 0.0524109014675052 * density * uy * uy
+        - 0.159948816378759 * density * uy * uz
         + 0.0263546278726544 * density * uy
-        - 0.0262054507337526 * density * uz * uz
+        - 0.0524109014675052 * density * uz * uz
         + 0.0263546278726544 * density * uz
         - 0.00873515024458421 * density
         + 0.00145262778368719 * q19
@@ -935,14 +875,14 @@ pub fn mrt(
         + 0.00145262778368719 * q25
         - 0.00960096371241642 * q26;
 
-    result[24] = -0.0262054507337526 * density * ux * ux
-        - 0.0799744081893794 * density * ux * uy
-        + 0.0799744081893794 * density * ux * uz
+    result[24] = -0.0524109014675052 * density * ux * ux
+        - 0.159948816378759 * density * ux * uy
+        + 0.159948816378759 * density * ux * uz
         + 0.0263546278726544 * density * ux
-        - 0.0262054507337526 * density * uy * uy
-        + 0.0799744081893794 * density * uy * uz
+        - 0.0524109014675052 * density * uy * uy
+        + 0.159948816378759 * density * uy * uz
         + 0.0263546278726544 * density * uy
-        - 0.0262054507337526 * density * uz * uz
+        - 0.0524109014675052 * density * uz * uz
         - 0.0263546278726544 * density * uz
         - 0.00873515024458421 * density
         + 0.00145262778368719 * q19
@@ -954,14 +894,14 @@ pub fn mrt(
         + 0.00145262778368719 * q25
         - 0.00960096371241642 * q26;
 
-    result[25] = -0.0262054507337526 * density * ux * ux
-        + 0.0799744081893794 * density * ux * uy
-        - 0.0799744081893794 * density * ux * uz
+    result[25] = -0.0524109014675052 * density * ux * ux
+        + 0.159948816378759 * density * ux * uy
+        - 0.159948816378759 * density * ux * uz
         + 0.0263546278726544 * density * ux
-        - 0.0262054507337526 * density * uy * uy
-        + 0.0799744081893794 * density * uy * uz
+        - 0.0524109014675052 * density * uy * uy
+        + 0.159948816378759 * density * uy * uz
         - 0.0263546278726544 * density * uy
-        - 0.0262054507337526 * density * uz * uz
+        - 0.0524109014675052 * density * uz * uz
         + 0.0263546278726544 * density * uz
         - 0.00873515024458421 * density
         + 0.00145262778368719 * q19
@@ -973,14 +913,14 @@ pub fn mrt(
         + 2.9099121294718 * q25
         - 0.00960096371241642 * q26;
 
-    result[26] = -0.0262054507337526 * density * ux * ux
-        - 0.0799744081893794 * density * ux * uy
-        - 0.0799744081893794 * density * ux * uz
+    result[26] = -0.0524109014675052 * density * ux * ux
+        - 0.159948816378759 * density * ux * uy
+        - 0.159948816378759 * density * ux * uz
         + 0.0263546278726544 * density * ux
-        - 0.0262054507337526 * density * uy * uy
-        - 0.0799744081893794 * density * uy * uz
+        - 0.0524109014675052 * density * uy * uy
+        - 0.159948816378759 * density * uy * uz
         + 0.0263546278726544 * density * uy
-        - 0.0262054507337526 * density * uz * uz
+        - 0.0524109014675052 * density * uz * uz
         + 0.0263546278726544 * density * uz
         - 0.00873515024458421 * density
         + 0.0013253311445766 * q19

@@ -37,8 +37,9 @@ fn main() {
         m_bgk = moments(f_bgk);
         da_bgk = abs_density(f_bgk);
 
-        f_f64 =
-            cm_mrt_f64(f_f64, m_f64.1[0], m_f64.1[1], m_f64.1[2], m_f64.0, riv as f64);
+        f_f64 = cm_mrt_f64(
+            f_f64, m_f64.1[0], m_f64.1[1], m_f64.1[2], m_f64.0, riv as f64,
+        );
         m_f64 = moments_f64(f_f64);
         da_f64 = abs_density_f64(f_f64);
         println!("{}, f32 - {} - {:?}", i, da, m);

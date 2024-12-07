@@ -55,8 +55,7 @@ def gen_bgk_ops(rust_src_dir, shader_src_dir, debug_dir):
     omega = Symbol("omega")
     eq_op = cm_mrt.f_eq(density, u)
 
-    eq_op = cm_mrt.f_eq(density, u)
-    bgk_op = f + omega * (f - eq_op)
+    bgk_op = f + omega * (eq_op - f)
      
     (source_body, debug_raw) = util.rust_generate_op(bgk_op.evalf())
     util.write_ops_debug(name, debug_raw, debug_dir)

@@ -30,7 +30,7 @@ fn moments(index: i32) {
 def moments_shader_footer():
     return '''\
     densities[index] = density;
-    set_velocity(index, vec3(ux, uy, uz)); 
+    set_velocity(index, vec3(ux/density, uy/density, uz/density)); 
 }
 "
 }

@@ -192,7 +192,7 @@ def MBar(density):
     return Matrix([[i] for i in r])
 
 def f_eq(density, u):
-    values = [w[j] * density * (1 + 3 * c[j].dot(u) + (9 / 2) * (c[j].dot(u))**2 - (3 / 2) * (u.dot(u))) for j in range(0, 27)]
+    values = [w[j] * density * (1 + 3 * c[j].dot(u) + 9 * (c[j].dot(u))**2 - 3 * (u.dot(u))) for j in range(0, 27)]
     return Matrix([[v] for v in values])
 
 # Utility to create vector of component symbols for f

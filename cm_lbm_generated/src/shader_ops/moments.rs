@@ -38,7 +38,7 @@ let uy = -q10 + q15 + q16 - q17 - q18 + q19 + q20 - q21 + q22 - q23 - q24 + q25 
 let uz = q11 - q12 + q13 - q14 + q15 - q16 + q17 - q18 + q19 - q20 + q21 + q22 - q23 + q24 - q25 - q26 + q5 - q6;
 
     densities[index] = density;
-    set_velocity(index, vec3(ux, uy, uz)); 
+    set_velocity(index, vec3(ux/density, uy/density, uz/density)); 
 }
 "
 }
