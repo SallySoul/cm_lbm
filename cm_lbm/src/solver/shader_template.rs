@@ -13,8 +13,8 @@
 /// But every single shader we use is generated
 /// by this file.
 use crate::*;
-use std::io::prelude::*;
 use cm_lbm_generated::shader_ops;
+use std::io::prelude::*;
 
 #[derive(Clone)]
 pub struct ShaderBuilder {
