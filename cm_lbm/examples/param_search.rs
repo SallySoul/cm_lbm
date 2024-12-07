@@ -8,18 +8,17 @@ async fn main() {
     std::fs::create_dir(output_dir).unwrap();
 
     println!("Start Param Search");
-    let omega = 1.85;
     let velocity = 0.2;
     let density = 1.0;
-    let riv = 1.85;
+    let riv = 1.95;
 
     let grid_dimensions = matrix![0, 60; 0, 60; 0, 100];
     let ic_density = density;
     let ic_velocity = vector![0.0, 0.0, velocity];
     let bc_density = density;
     let bc_velocity = vector![0.0, 0.0, velocity];
-    let n_it = 4000;
-    let n_out = 4000;
+    let n_it = 100000;
+    let n_out = 500;
 
     let driver = setup_wgpu().await;
     //let bounce_back = BounceBack::empty(&driver.device, &grid_dimensions);
@@ -71,7 +70,7 @@ async fn main() {
 
     let mut solver = Solver::new(&driver, params);
 
-    solver.write_vtk(&driver, &format!("{}/moments_{:06}.vtu", output_dir, 0));
+    solver.write_vtk(&driver, &format!("{}/moments_{:09}.vtu", output_dir, 0));
     for iter in 1..n_it {
         println!("iter: {}", iter);
         solver.apply_stream(&driver);
@@ -89,7 +88,7 @@ async fn main() {
             run_submission(&driver, |encoder| solver.moments(encoder));
             solver.write_vtk(
                 &driver,
-                &format!("{}/moments_{:06}.vtu", output_dir, iter),
+                &format!("{}/moments_{:09}.vtu", output_dir, iter),
             );
         }
     }
