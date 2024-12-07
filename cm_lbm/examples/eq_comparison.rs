@@ -28,7 +28,7 @@ fn main() {
     println!("0, bgk - {} - {:?}", da_bgk, m_bgk);
     println!("0, f64 + {} - {:?}\n", da_f64, m_f64);
 
-    for i in 0..40 {
+    for i in 0..1000 {
         f = cm_mrt(f, m.1[0], m.1[1], m.1[2], m.0, riv);
         m = moments(f);
         da = abs_density(f);
