@@ -1,6 +1,6 @@
-pub fn wgsl_mrt(riv: f32) -> String {
+pub fn wgsl_cm_mrt(riv: f32) -> String {
     format!("
-fn mrt(index: i32) {{
+fn cm_mrt(index: i32) {{
     let velocity = get_velocity(index);
     let ux = velocity[0];
     let uy = velocity[1];

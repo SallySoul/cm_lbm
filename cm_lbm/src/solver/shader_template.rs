@@ -207,10 +207,6 @@ fn specular_reflect(velocity: vec3<f32>, norm: vec3<f32>) -> vec3<f32> {
 ";
     }
 
-    pub fn add_cm_mrt_fn(&mut self, v: f32) {
-        add_cm_mrt_fn(&mut self.buffer, v);
-    }
-
     fn add_main_invocation_id_block(&mut self, workgroup_size: [u32; 3]) {
         self.buffer += &format!(
             "

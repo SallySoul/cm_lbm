@@ -130,7 +130,6 @@ impl Collision {
         shader_builder.add_equil_fn();
         shader_builder.add_specular_reflection();
         shader_builder.add_bounceback_fn();
-        shader_builder.add_cm_mrt_fn(0.0);
         shader_builder.add_collision_main([4, 4, 4], omega);
         let shader_source =
             shader_builder.finish("shader_debug/collision.wgsl");
