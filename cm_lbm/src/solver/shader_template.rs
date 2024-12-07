@@ -572,8 +572,22 @@ fn apply_bounce_back(index: i32) {
 ";
     }
 
-    pub fn add_collision_main(&mut self, workgroup_size: [u32; 3], omega: f32) {
-        self.buffer += &shader_ops::wgsl_bgk(omega);
+    pub fn add_collision_main(
+        &mut self,
+        workgroup_size: [u32; 3],
+        collision: CollisionType,
+    ) {
+        match collision {
+            CollisionType::BGK(omega) => {
+                self.buffer += &shader_ops::wgsl_bgk(omega);
+            }
+            CollisionType::MRT(riv) => {
+                self.buffer += &shader_ops::wgsl_mrt(riv);
+            }
+            CollisionType::CMMRT(riv) => {
+                self.buffer += &shader_ops::wgsl_cm_mrt(riv);
+            }
+        }
         self.add_main_invocation_id_block(workgroup_size);
         self.buffer += "
   let index = coord_to_linear(x, y, z);
@@ -584,7 +598,27 @@ fn apply_bounce_back(index: i32) {
 
   // Collide
   if bb_flag[index] < 0 {
+";
+
+        match collision {
+            CollisionType::BGK(_) => {
+                self.buffer += "
     bgk(index);
+";
+            }
+            CollisionType::MRT(_) => {
+                self.buffer += "
+    mrt(index); 
+";
+            }
+            CollisionType::CMMRT(_) => {
+                self.buffer += "
+    cm_mrt(index);
+";
+            }
+        }
+
+        self.buffer += "
   } 
 
   // Specular slip

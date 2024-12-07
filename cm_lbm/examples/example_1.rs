@@ -9,12 +9,11 @@ async fn main() {
 
     println!("Start Example 1");
     let grid_dimensions = matrix![0, 60; 0, 60; 0, 100];
-    let omega = 1.85;
     let ic_density = 1.0;
-    let ic_velocity = vector![0.0, 0.0, 0.01];
+    let ic_velocity = vector![0.0, 0.0, 0.001];
     let bc_density = 1.0;
-    let bc_velocity = vector![0.0, 0.0, 0.01];
-    let n_it = 10;
+    let bc_velocity = vector![0.0, 0.0, 0.001];
+    let n_it = 20;
     let n_out = 1;
 
     let driver = setup_wgpu().await;
@@ -41,15 +40,16 @@ async fn main() {
     let bc_params =
         BCParamsUniform::new(&driver.device, bc_velocity, ic_density);
 
-    let mut solver = Solver::new(
-        &driver,
+    let params = SolverParams {
         bounce_back,
-        ic_params,
-        bc_params,
+        ic_params_uniform: ic_params,
+        bc_params_uniform: bc_params,
         grid_dimensions,
-        omega,
-        false,
-    );
+        collision_type: CollisionType::MRT(0.6),
+        stream_figure: false,
+    };
+
+    let mut solver = Solver::new(&driver, params);
 
     solver.write_vtk(&driver, &format!("{}/moments_{:06}.vtu", output_dir, 0));
     for iter in 1..n_it {
@@ -57,7 +57,7 @@ async fn main() {
         solver.apply_stream(&driver);
 
         run_submission(&driver, |encoder| {
-            //solver.moments(encoder);
+            solver.moments(encoder);
             //solver.apply_dirichlet(encoder);
             //solver.apply_slip_surfaces(encoder);
             solver.apply_collision(encoder);

@@ -20,7 +20,7 @@ impl Collision {
         moments: &Moments,
         bounce_back: &BounceBack,
         distributions: &Distributions,
-        omega: f32,
+        collision_type: CollisionType,
     ) -> Self {
         println!("Creating Collision");
         let x_min = grid_dimensions[(0, 0)];
@@ -130,7 +130,7 @@ impl Collision {
         shader_builder.add_equil_fn();
         shader_builder.add_specular_reflection();
         shader_builder.add_bounceback_fn();
-        shader_builder.add_collision_main([4, 4, 4], omega);
+        shader_builder.add_collision_main([4, 4, 4], collision_type);
         let shader_source =
             shader_builder.finish("shader_debug/collision.wgsl");
 
