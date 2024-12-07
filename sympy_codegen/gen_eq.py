@@ -60,7 +60,7 @@ def gen_eq_ops(rust_src_dir, shader_src_dir, debug_dir):
 
     eq_op = cm_mrt.f_eq(density, u)
 
-    (source_body, debug_raw) = util.rust_generate_op(simplify(eq_op))
+    (source_body, debug_raw) = util.rust_generate_op(simplify(eq_op).evalf())
     util.write_ops_debug(name, debug_raw, debug_dir)
 
     rust_source = eq_rust_header()

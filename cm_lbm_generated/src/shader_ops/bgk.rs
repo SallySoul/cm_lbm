@@ -50,45 +50,45 @@ result[5] = omega*(-0.0740740740740741*density*(-1.5*ux * ux - 1.5*uy * uy + 3.0
 
 result[6] = omega*(-0.0740740740740741*density*(-1.5*ux * ux - 1.5*uy * uy + 3.0*uz * uz - 3.0*uz + 1.0) + q6) + q6;
 
-result[7] = omega*(-0.0185185185185185*density*(-1.5*ux * ux + 3.0*ux - 1.5*uy * uy + 3.0*uy - 1.5*uz * uz + 4.5*(1.0*ux + 1.0*uy) * (1.0*ux + 1.0*uy) + 1.0) + q7) + q7;
+result[7] = omega*(-0.0185185185185185*density*(-1.5*ux * ux + 3.0*ux - 1.5*uy * uy + 3.0*uy - 1.5*uz * uz + 4.5*(ux + uy) * (ux + uy) + 1.0) + q7) + q7;
 
-result[8] = omega*(-0.0185185185185185*density*(-1.5*ux * ux + 3.0*ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz + 4.5*(1.0*ux - 1.0*uy) * (1.0*ux - 1.0*uy) + 1.0) + q8) + q8;
+result[8] = omega*(-0.0185185185185185*density*(-1.5*ux * ux + 3.0*ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz + 4.5*(ux - uy) * (ux - uy) + 1.0) + q8) + q8;
 
-result[9] = omega*(-0.0185185185185185*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy + 3.0*uy - 1.5*uz * uz + 4.5*(-1.0*ux + 1.0*uy) * (-1.0*ux + 1.0*uy) + 1.0) + q9) + q9;
+result[9] = omega*(-0.0185185185185185*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy + 3.0*uy - 1.5*uz * uz + 4.5*(-ux + uy) * (-ux + uy) + 1.0) + q9) + q9;
 
-result[10] = omega*(-0.0185185185185185*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz + 4.5*(-1.0*ux - 1.0*uy) * (-1.0*ux - 1.0*uy) + 1.0) + q10) + q10;
+result[10] = omega*(-0.0185185185185185*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz + 4.5*(-ux - uy) * (-ux - uy) + 1.0) + q10) + q10;
 
-result[11] = omega*(-0.0185185185185185*density*(-1.5*ux * ux + 3.0*ux - 1.5*uy * uy - 1.5*uz * uz + 3.0*uz + 4.5*(1.0*ux + 1.0*uz) * (1.0*ux + 1.0*uz) + 1.0) + q11) + q11;
+result[11] = omega*(-0.0185185185185185*density*(-1.5*ux * ux + 3.0*ux - 1.5*uy * uy - 1.5*uz * uz + 3.0*uz + 4.5*(ux + uz) * (ux + uz) + 1.0) + q11) + q11;
 
-result[12] = omega*(-0.0185185185185185*density*(-1.5*ux * ux + 3.0*ux - 1.5*uy * uy - 1.5*uz * uz - 3.0*uz + 4.5*(1.0*ux - 1.0*uz) * (1.0*ux - 1.0*uz) + 1.0) + q12) + q12;
+result[12] = omega*(-0.0185185185185185*density*(-1.5*ux * ux + 3.0*ux - 1.5*uy * uy - 1.5*uz * uz - 3.0*uz + 4.5*(ux - uz) * (ux - uz) + 1.0) + q12) + q12;
 
-result[13] = omega*(-0.0185185185185185*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy - 1.5*uz * uz + 3.0*uz + 4.5*(-1.0*ux + 1.0*uz) * (-1.0*ux + 1.0*uz) + 1.0) + q13) + q13;
+result[13] = omega*(-0.0185185185185185*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy - 1.5*uz * uz + 3.0*uz + 4.5*(-ux + uz) * (-ux + uz) + 1.0) + q13) + q13;
 
-result[14] = omega*(-0.0185185185185185*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy - 1.5*uz * uz - 3.0*uz + 4.5*(-1.0*ux - 1.0*uz) * (-1.0*ux - 1.0*uz) + 1.0) + q14) + q14;
+result[14] = omega*(-0.0185185185185185*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy - 1.5*uz * uz - 3.0*uz + 4.5*(-ux - uz) * (-ux - uz) + 1.0) + q14) + q14;
 
-result[15] = omega*(-0.0185185185185185*density*(-1.5*ux * ux - 1.5*uy * uy + 3.0*uy - 1.5*uz * uz + 3.0*uz + 4.5*(1.0*uy + 1.0*uz) * (1.0*uy + 1.0*uz) + 1.0) + q15) + q15;
+result[15] = omega*(-0.0185185185185185*density*(-1.5*ux * ux - 1.5*uy * uy + 3.0*uy - 1.5*uz * uz + 3.0*uz + 4.5*(uy + uz) * (uy + uz) + 1.0) + q15) + q15;
 
-result[16] = omega*(-0.0185185185185185*density*(-1.5*ux * ux - 1.5*uy * uy + 3.0*uy - 1.5*uz * uz - 3.0*uz + 4.5*(1.0*uy - 1.0*uz) * (1.0*uy - 1.0*uz) + 1.0) + q16) + q16;
+result[16] = omega*(-0.0185185185185185*density*(-1.5*ux * ux - 1.5*uy * uy + 3.0*uy - 1.5*uz * uz - 3.0*uz + 4.5*(uy - uz) * (uy - uz) + 1.0) + q16) + q16;
 
-result[17] = omega*(-0.0185185185185185*density*(-1.5*ux * ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz + 3.0*uz + 4.5*(-1.0*uy + 1.0*uz) * (-1.0*uy + 1.0*uz) + 1.0) + q17) + q17;
+result[17] = omega*(-0.0185185185185185*density*(-1.5*ux * ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz + 3.0*uz + 4.5*(-uy + uz) * (-uy + uz) + 1.0) + q17) + q17;
 
-result[18] = omega*(-0.0185185185185185*density*(-1.5*ux * ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz - 3.0*uz + 4.5*(-1.0*uy - 1.0*uz) * (-1.0*uy - 1.0*uz) + 1.0) + q18) + q18;
+result[18] = omega*(-0.0185185185185185*density*(-1.5*ux * ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz - 3.0*uz + 4.5*(-uy - uz) * (-uy - uz) + 1.0) + q18) + q18;
 
-result[19] = omega*(-0.00462962962962963*density*(-1.5*ux * ux + 3.0*ux - 1.5*uy * uy + 3.0*uy - 1.5*uz * uz + 3.0*uz + 4.5*(1.0*ux + 1.0*uy + 1.0*uz) * (1.0*ux + 1.0*uy + 1.0*uz) + 1.0) + q19) + q19;
+result[19] = omega*(-0.00462962962962963*density*(-1.5*ux * ux + 3.0*ux - 1.5*uy * uy + 3.0*uy - 1.5*uz * uz + 3.0*uz + 4.5*(ux + uy + uz) * (ux + uy + uz) + 1.0) + q19) + q19;
 
-result[20] = omega*(-0.00462962962962963*density*(-1.5*ux * ux + 3.0*ux - 1.5*uy * uy + 3.0*uy - 1.5*uz * uz - 3.0*uz + 4.5*(1.0*ux + 1.0*uy - 1.0*uz) * (1.0*ux + 1.0*uy - 1.0*uz) + 1.0) + q20) + q20;
+result[20] = omega*(-0.00462962962962963*density*(-1.5*ux * ux + 3.0*ux - 1.5*uy * uy + 3.0*uy - 1.5*uz * uz - 3.0*uz + 4.5*(ux + uy - uz) * (ux + uy - uz) + 1.0) + q20) + q20;
 
-result[21] = omega*(-0.00462962962962963*density*(-1.5*ux * ux + 3.0*ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz + 3.0*uz + 4.5*(1.0*ux - 1.0*uy + 1.0*uz) * (1.0*ux - 1.0*uy + 1.0*uz) + 1.0) + q21) + q21;
+result[21] = omega*(-0.00462962962962963*density*(-1.5*ux * ux + 3.0*ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz + 3.0*uz + 4.5*(ux - uy + uz) * (ux - uy + uz) + 1.0) + q21) + q21;
 
-result[22] = omega*(-0.00462962962962963*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy + 3.0*uy - 1.5*uz * uz + 3.0*uz + 4.5*(-1.0*ux + 1.0*uy + 1.0*uz) * (-1.0*ux + 1.0*uy + 1.0*uz) + 1.0) + q22) + q22;
+result[22] = omega*(-0.00462962962962963*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy + 3.0*uy - 1.5*uz * uz + 3.0*uz + 4.5*(-ux + uy + uz) * (-ux + uy + uz) + 1.0) + q22) + q22;
 
-result[23] = omega*(-0.00462962962962963*density*(-1.5*ux * ux + 3.0*ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz - 3.0*uz + 4.5*(1.0*ux - 1.0*uy - 1.0*uz) * (1.0*ux - 1.0*uy - 1.0*uz) + 1.0) + q23) + q23;
+result[23] = omega*(-0.00462962962962963*density*(-1.5*ux * ux + 3.0*ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz - 3.0*uz + 4.5*(ux - uy - uz) * (ux - uy - uz) + 1.0) + q23) + q23;
 
-result[24] = omega*(-0.00462962962962963*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz + 3.0*uz + 4.5*(-1.0*ux - 1.0*uy + 1.0*uz) * (-1.0*ux - 1.0*uy + 1.0*uz) + 1.0) + q24) + q24;
+result[24] = omega*(-0.00462962962962963*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz + 3.0*uz + 4.5*(-ux - uy + uz) * (-ux - uy + uz) + 1.0) + q24) + q24;
 
-result[25] = omega*(-0.00462962962962963*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy + 3.0*uy - 1.5*uz * uz - 3.0*uz + 4.5*(-1.0*ux + 1.0*uy - 1.0*uz) * (-1.0*ux + 1.0*uy - 1.0*uz) + 1.0) + q25) + q25;
+result[25] = omega*(-0.00462962962962963*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy + 3.0*uy - 1.5*uz * uz - 3.0*uz + 4.5*(-ux + uy - uz) * (-ux + uy - uz) + 1.0) + q25) + q25;
 
-result[26] = omega*(-0.00462962962962963*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz - 3.0*uz + 4.5*(-1.0*ux - 1.0*uy - 1.0*uz) * (-1.0*ux - 1.0*uy - 1.0*uz) + 1.0) + q26) + q26;
+result[26] = omega*(-0.00462962962962963*density*(-1.5*ux * ux - 3.0*ux - 1.5*uy * uy - 3.0*uy - 1.5*uz * uz - 3.0*uz + 4.5*(-ux - uy - uz) * (-ux - uy - uz) + 1.0) + q26) + q26;
 
     add_qi_to_distributions(index, result);
 }}

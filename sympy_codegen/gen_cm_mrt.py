@@ -73,7 +73,7 @@ def gen_cm_mrt_ops(rust_src_dir, shader_src_dir, debug_dir):
     mbar = cm_mrt.MBar(density)
     cm_mrt_op = f + m1 * r * ((m * f) - mbar)
 
-    (source_body, debug_raw) = util.rust_generate_op(cm_mrt_op)
+    (source_body, debug_raw) = util.rust_generate_op(cm_mrt_op.evalf())
     util.write_ops_debug(name, debug_raw, debug_dir)
 
     rust_source = cm_mrt_rust_header()

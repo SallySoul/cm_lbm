@@ -51,7 +51,7 @@ def gen_eqhigh_ops(rust_src_dir, shader_src_dir, debug_dir):
     m1 = m.inv()
     eqhigh_op = m1 * cm_mrt.MBar(density)
 
-    (source_body, debug_raw) = util.rust_generate_op(simplify(eqhigh_op))
+    (source_body, debug_raw) = util.rust_generate_op(simplify(eqhigh_op).evalf())
     util.write_ops_debug(name, debug_raw, debug_dir)
 
     rust_source = eqhigh_rust_header()

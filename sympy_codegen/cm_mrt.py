@@ -1,66 +1,67 @@
 from sympy.matrices import Matrix
 from sympy import Symbol
+from sympy.core.numbers import Rational
 
 # The lattice directions
 c = [
-  Matrix([[0.0], [0.0], [0.0]]),
-  Matrix([[1.0], [0.0], [0.0]]),
-  Matrix([[-1.0], [0.0], [0.0]]),
-  Matrix([[0.0], [1.0], [0.0]]),
-  Matrix([[0.0], [-1.0], [0.0]]),
-  Matrix([[0.0], [0.0], [1.0]]),
-  Matrix([[0.0], [0.0], [-1.0]]),
-  Matrix([[1.0], [1.0], [0.0]]),
-  Matrix([[1.0], [-1.0], [0.0]]),
-  Matrix([[-1.0], [1.0], [0.0]]),
-  Matrix([[-1.0], [-1.0], [0.0]]),
-  Matrix([[1.0], [0.0], [1.0]]),
-  Matrix([[1.0], [0.0], [-1.0]]),
-  Matrix([[-1.0], [0.0], [1.0]]),
-  Matrix([[-1.0], [0.0], [-1.0]]),
-  Matrix([[0.0], [1.0], [1.0]]),
-  Matrix([[0.0], [1.0], [-1.0]]),
-  Matrix([[0.0], [-1.0], [1.0]]),
-  Matrix([[0.0], [-1.0], [-1.0]]),
-  Matrix([[1.0], [1.0], [1.0]]),
-  Matrix([[1.0], [1.0], [-1.0]]),
-  Matrix([[1.0], [-1.0], [1.0]]),
-  Matrix([[-1.0], [1.0], [1.0]]),
-  Matrix([[1.0], [-1.0], [-1.0]]),
-  Matrix([[-1.0], [-1.0], [1.0]]),
-  Matrix([[-1.0], [1.0], [-1.0]]),
-  Matrix([[-1.0], [-1.0], [-1.0]]),
+  Matrix([[0], [0], [0]]),
+  Matrix([[1], [0], [0]]),
+  Matrix([[-1], [0], [0]]),
+  Matrix([[0], [1], [0]]),
+  Matrix([[0], [-1], [0]]),
+  Matrix([[0], [0], [1]]),
+  Matrix([[0], [0], [-1]]),
+  Matrix([[1], [1], [0]]),
+  Matrix([[1], [-1], [0]]),
+  Matrix([[-1], [1], [0]]),
+  Matrix([[-1], [-1], [0]]),
+  Matrix([[1], [0], [1]]),
+  Matrix([[1], [0], [-1]]),
+  Matrix([[-1], [0], [1]]),
+  Matrix([[-1], [0], [-1]]),
+  Matrix([[0], [1], [1]]),
+  Matrix([[0], [1], [-1]]),
+  Matrix([[0], [-1], [1]]),
+  Matrix([[0], [-1], [-1]]),
+  Matrix([[1], [1], [1]]),
+  Matrix([[1], [1], [-1]]),
+  Matrix([[1], [-1], [1]]),
+  Matrix([[-1], [1], [1]]),
+  Matrix([[1], [-1], [-1]]),
+  Matrix([[-1], [-1], [1]]),
+  Matrix([[-1], [1], [-1]]),
+  Matrix([[-1], [-1], [-1]]),
 ]
 
 # Quadrature weights for equilibrium
 w = [
-    8.0 / 27.0,
-    2.0 / 27.0,
-    2.0 / 27.0,
-    2.0 / 27.0,
-    2.0 / 27.0,
-    2.0 / 27.0,
-    2.0 / 27.0,
-    1.0 / 54.0,
-    1.0 / 54.0,
-    1.0 / 54.0,
-    1.0 / 54.0,
-    1.0 / 54.0,
-    1.0 / 54.0,
-    1.0 / 54.0,
-    1.0 / 54.0,
-    1.0 / 54.0,
-    1.0 / 54.0,
-    1.0 / 54.0,
-    1.0 / 54.0,
-    1.0 / 216.0,
-    1.0 / 216.0,
-    1.0 / 216.0,
-    1.0 / 216.0,
-    1.0 / 216.0,
-    1.0 / 216.0,
-    1.0 / 216.0,
-    1.0 / 216.0,
+    Rational(8, 27),
+    Rational(2, 27),
+    Rational(2, 27),
+    Rational(2, 27),
+    Rational(2, 27),
+    Rational(2, 27),
+    Rational(2, 27),
+    Rational(1, 54),
+    Rational(1, 54),
+    Rational(1, 54),
+    Rational(1, 54),
+    Rational(1, 54),
+    Rational(1, 54),
+    Rational(1, 54),
+    Rational(1, 54),
+    Rational(1, 54),
+    Rational(1, 54),
+    Rational(1, 54),
+    Rational(1, 54),
+    Rational(1, 216),
+    Rational(1, 216),
+    Rational(1, 216),
+    Rational(1, 216),
+    Rational(1, 216),
+    Rational(1, 216),
+    Rational(1, 216),
+    Rational(1, 216),
 ];
 
 # Moments
@@ -163,12 +164,12 @@ def M(u):
 
 # Derive relaxation rate from kinematic viscosity
 def moment_relaxation_rate(v):
-    return 1.0 / (3 * v + 0.5)
+    return Rational(1, (3 * v + Rational(1, 2)))
 
 # Precompute value for r4 - r9, pass in as riv
 # r9 is unclear, could be in either set from what I can find?
 def relaxation_rates(riv):
-    r0r8 = [0.0, 0.0, 0.0, 0.0, riv, riv, riv, riv, riv]
+    r0r8 = [0, 0, 0, 0, riv, riv, riv, riv, riv]
     r9r16 = [moment_relaxation_rate(0.005) for i in range(0,8)]
     r17r22 = [moment_relaxation_rate(0.007) for i in range(0, 6)]
     r23r25 = [moment_relaxation_rate(0.009) for i in range(0,3)]
@@ -185,9 +186,9 @@ def MBar(density):
     r = [0 for i in range(0, 27)]
     r[0] = density
     r[9] = density
-    r[17] = density / 3.0;
-    r[18] = density / 9.0;
-    r[26] = density / 27.0
+    r[17] = density / 3;
+    r[18] = density / 9;
+    r[26] = density / 27
     return Matrix([[i] for i in r])
 
 def f_eq(density, u):

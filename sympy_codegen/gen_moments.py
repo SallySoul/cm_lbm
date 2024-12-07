@@ -43,7 +43,7 @@ def gen_moments_ops(rust_src_dir, shader_src_dir, debug_dir):
     f = cm_mrt.f()
     moment_op = cm_mrt.M(Matrix([[0.0], [0.0], [0.0]])) * f
 
-    (source_body, debug_raw) = util.rust_generate_moment_op(simplify(moment_op))
+    (source_body, debug_raw) = util.rust_generate_moment_op(simplify(moment_op).evalf())
     util.write_ops_debug(name, debug_raw, debug_dir)
 
     rust_source = moments_rust_header()

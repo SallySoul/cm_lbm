@@ -62,7 +62,7 @@ def gen_mrt_ops(rust_src_dir, shader_src_dir, debug_dir):
     eq_op = cm_mrt.f_eq(density, u)
     mrt_op = f + m1 * r * m * (f - eq_op)
 
-    (source_body, debug_raw) = util.rust_generate_op(simplify(mrt_op))
+    (source_body, debug_raw) = util.rust_generate_op(simplify(mrt_op).evalf())
     util.write_ops_debug(name, debug_raw, debug_dir)
 
     rust_source = mrt_rust_header()
