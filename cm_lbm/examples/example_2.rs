@@ -19,23 +19,26 @@ async fn main() {
     let _ = std::fs::remove_dir_all(output_dir);
     std::fs::create_dir(output_dir).unwrap();
 
-    println!("Op Compare");
+    println!("Example 2");
     let velocity = 0.16;
     let density = 1.0;
     let riv = 1.985;
-    let operator = CollisionType::CMMRT(riv);
+
     let grid_dimensions = matrix![0, 80; 0, 80; 0, 185];
     let ic_density = density;
     let ic_velocity = vector![0.0, 0.0, velocity];
     let bc_density = density;
     let bc_velocity = vector![0.0, 0.0, velocity];
-    let n_it = 3200;
-    let n_out = 200;
-
-    let world_coords = WorldCoords::new(vector![-40.0, -40.0, -40.0], 1.0);
-    let spheres = vec![(vector![0.0, 0.0, 0.0], 20.0)];
+    let n_it = 30000;
+    let n_out = 15;
 
     let driver = setup_wgpu().await;
+
+    let world_coords = WorldCoords::new(vector![-40.0, -40.0, -40.0], 1.0);
+    let spheres = vec![
+        (vector![12.0, 12.0, 5.0], 10.0),
+        (vector![-12.0, -12.0, -10.0], 10.0),
+    ];
 
     let bounce_back = BounceBack::new_spheres(
         &driver.device,
@@ -56,7 +59,7 @@ async fn main() {
         ic_params_uniform: ic_params,
         bc_params_uniform: bc_params,
         grid_dimensions,
-        collision_type: operator,
+        collision_type: CollisionType::CMMRT(riv),
         stream_figure: false,
     };
 

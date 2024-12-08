@@ -176,4 +176,36 @@ impl Solver {
         grid.add_attribute("velocity".to_string(), 3, velocities);
         grid.write(path);
     }
+
+    // Run the solver for n_it - 1 iterations
+    // and write out a snapshot every n_out snapshots (including zero not n_it).
+    pub fn run(
+        &mut self,
+        driver: &Driver,
+        output_dir: &str,
+        n_it: usize,
+        n_out: usize,
+    ) {
+        self.write_vtk(driver, &format!("{}/moments_{:09}.vtu", output_dir, 0));
+        for iter in 1..n_it {
+            //println!("iter: {}", iter);
+            self.apply_stream(driver);
+
+            run_submission(driver, |encoder| {
+                self.moments(encoder);
+                self.apply_dirichlet(encoder);
+                self.apply_collision(encoder);
+                self.apply_dirichlet(encoder);
+            });
+
+            let write_output = (iter + 1) % n_out == 0;
+            if write_output {
+                run_submission(driver, |encoder| self.moments(encoder));
+                self.write_vtk(
+                    driver,
+                    &format!("{}/moments_{:09}.vtu", output_dir, iter),
+                );
+            }
+        }
+    }
 }
