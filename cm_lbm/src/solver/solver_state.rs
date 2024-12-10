@@ -185,10 +185,11 @@ impl Solver {
         output_dir: &str,
         n_it: usize,
         n_out: usize,
+        n_delay_start: Option<usize>,
     ) {
         self.write_vtk(driver, &format!("{}/moments_{:09}.vtu", output_dir, 0));
         for iter in 1..n_it {
-            //println!("iter: {}", iter);
+            println!("iter: {}", iter);
             self.apply_stream(driver);
 
             run_submission(driver, |encoder| {
@@ -198,8 +199,14 @@ impl Solver {
                 self.apply_dirichlet(encoder);
             });
 
+            let delay = if let Some(n_start) = n_delay_start {
+                iter < n_start
+            } else {
+                false
+            };
+                
             let write_output = (iter + 1) % n_out == 0;
-            if write_output {
+            if write_output && !delay {
                 run_submission(driver, |encoder| self.moments(encoder));
                 self.write_vtk(
                     driver,

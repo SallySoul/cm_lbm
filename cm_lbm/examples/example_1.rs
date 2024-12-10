@@ -19,21 +19,21 @@ async fn main() {
     let _ = std::fs::remove_dir_all(output_dir);
     std::fs::create_dir(output_dir).unwrap();
 
-    println!("Op Compare");
-    let velocity = 0.16;
+    println!("Example 1");
+    let velocity = 0.12;
     let density = 1.0;
-    let riv = 1.985;
+    let riv = 1.98;
     let operator = CollisionType::CMMRT(riv);
-    let grid_dimensions = matrix![0, 80; 0, 80; 0, 185];
+    let grid_dimensions = matrix![0, 79; 0, 79; 0, 190];
     let ic_density = density;
     let ic_velocity = vector![0.0, 0.0, velocity];
     let bc_density = density;
     let bc_velocity = vector![0.0, 0.0, velocity];
-    let n_it = 3200;
-    let n_out = 200;
+    let n_it = 20000;
+    let n_out = 10;
 
-    let world_coords = WorldCoords::new(vector![-40.0, -40.0, -40.0], 1.0);
-    let spheres = vec![(vector![0.0, 0.0, 0.0], 20.0)];
+    let world_coords = WorldCoords::new(vector![-39.0, -39.0, -37.0], 1.0);
+    let spheres = vec![(vector![0.0, 0.0, 0.0], 16.0)];
 
     let driver = setup_wgpu().await;
 
@@ -61,5 +61,5 @@ async fn main() {
     };
 
     let mut solver = Solver::new(&driver, params);
-    solver.run(&driver, output_dir, n_it, n_out);
+    solver.run(&driver, output_dir, n_it, n_out, None);
 }

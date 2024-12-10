@@ -54,7 +54,7 @@ def gen_mrt_ops(rust_src_dir, shader_src_dir, debug_dir):
     density = Symbol("density")
     riv = Symbol("riv")
 
-    m = cm_mrt.M(Matrix([[0.0], [0.0], [0.0]]))
+    m = cm_mrt.M(Matrix([[0], [0], [0]]))
     m1 = m.inv()
     r = cm_mrt.R(riv)
     f = cm_mrt.f()

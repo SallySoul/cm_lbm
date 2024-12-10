@@ -37,7 +37,7 @@ async fn main() {
 
     let operators = [
         ("cm_mrt", CollisionType::CMMRT(riv)),
-        ("mrt", CollisionType::MRT(riv)),
+        //("mrt", CollisionType::MRT(riv)),
         ("bgk", CollisionType::BGK(riv)),
     ];
 
