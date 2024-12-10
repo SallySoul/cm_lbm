@@ -44,10 +44,11 @@ The generated functions are checked into git, but to re-generated them run the f
 python sympy_codegen/codegen.py
 ```
 
-### Run Example
+### Run Example 1
 
 The header image was generated with `example_1.rs`. 
 This can be run with
 ```
 cargo run --release --example example_1 -- --output-dir <dir-for-output-files>
 ```
+Note that this example will generate over 300gb of data.
