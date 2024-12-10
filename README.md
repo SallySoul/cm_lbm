@@ -16,7 +16,7 @@ In addition, python is used for code-generation.
 This directory contains a python script `codegen.py` and supporting modules 
 to generate shader code for several kernels needed by LBM.
 The operations are represented symbolically using SymPy.
-In particular, checkout the `sympy_codegen/gen_*.py`, there's one for each operation.
+In particular, checkout the `sympy_codegen/gen_*.py` files, there's one for each operation.
 
 ### `cm_lbm_generated`
 
@@ -24,7 +24,7 @@ This is a rust crate that strictly contains the generated operators.
 There are two to three versions of each operator.
 In `cm_lbm_generated/src/shader_ops` we have rust functions
 that contains a WGSL function as a string which will get templated into a shader at runtime.
-`cm_lbm_generates/src/rust_ops` contains the operators single and some-times double precision
+`cm_lbm_generates/src/rust_ops` contains the operators single and maybe double-precision
 rust functions.
 
 ### `cm_lbm`
